@@ -2,6 +2,7 @@ from django.db import models
 
 # Database configuration here
 
+
 class Report(models.Model):
 
     #Community choices
@@ -110,4 +111,22 @@ class Report(models.Model):
     physician_comments = models.TextField(default='')
 
     #Automatically Generated Information
+    #TODO: Add fields to track the submission account, completed account, and physician account (OnetoOneField)
     report_submission_date = models.DateTimeField(auto_now_add=True)
+
+    #Report Statuses
+    COMPLETE = ('CO', 'Complete')
+    PARTIALLY_COMPLETED = ('PC', 'Partially Completed')
+    PENDING_PHYSICIAN = ('PP', 'Pending Physician\'s Signature')
+    SUBMITTED = ('SU', 'Submitted')
+    STATUS_CHOICES = [
+        COMPLETE,
+        PARTIALLY_COMPLETED,
+        PENDING_PHYSICIAN,
+        SUBMITTED
+    ]
+    report_status = models.CharField(
+        max_length=2,
+        choices=STATUS_CHOICES,
+        default=PARTIALLY_COMPLETED
+    )
