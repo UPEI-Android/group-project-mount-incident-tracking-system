@@ -4,4 +4,12 @@ from django.http import HttpResponse
 
 # Create your views here.
 def home(request):
-    return HttpResponse('<h1>Home Page</h1>')
+    return render(request, 'index.html')
+
+
+def form(request):
+    return render(request, 'input_form.html')
+
+
+def dashboard(request):
+    return render(request, "dashboard.html")
