@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>The Mount</title>
+     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css?family=ABeeZee&amp;display=swap' %}">
+    <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css?family=Abel&amp;display=swap' %}">
+    <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css?family=Lato&amp;display=swap' %}">
+    <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css?family=Noto+Sans+JP&amp;display=swap' %}">
+    <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css?family=Noto+Sans+KR&amp;display=swap' %}">
+    <link rel="stylesheet" href="{% static 'fonts/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fonts/simple-line-icons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<!-- assets/css/styles.css -->
+<body>
+    <div class="container">
+        <div class="row d-flex justify-content-center justify-content-sm-center justify-content-xl-center">
+            <div class="col-12" style="margin-bottom: 40px;">
+                <div style="text-align: center;margin-top: 25px;"><img src="{% static 'img/The-Mount-Main-Logo-JPG.png' %}" width="100">
+                    <p style="font-family: ABeeZee, sans-serif;font-size: 35px;"> The Mount Continuing Care<br>Incident Reporting</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-10 col-lg-8 col-xl-6" style="margin-bottom: 40px;">
+                <div style="padding: 25px;border-radius: 15px;box-shadow: 0px 10px 20px 10px rgba(33,37,41,0.12);">
+                    <form>
+                        <div class="row d-flex justify-content-sm-center justify-content-xl-center">
+                            <div class="col-12 text-center" style="padding: 10px;padding-bottom: 5px;padding-top: 5px;margin-bottom: 20px;">
+                                <h1 style="font-family: ABeeZee, sans-serif;font-size: 45px;color: var(--bs-gray-700);"><i class="icon-lock" style="font-size: 75px;color: var(--bs-gray-700);"></i><br>Login<br></h1>
+                            </div>
+                            <div class="col-12" style="padding: 10px;padding-bottom: 5px;"><input class="form-control" type="text" name="Username" placeholder="Username" style="font-size: 20px;font-family: ABeeZee, sans-serif;border-radius: 10px;"></div>
+                            <div class="col-12" style="padding: 10px;padding-top: 5px;"><input class="form-control" type="password" name="Password" placeholder="Password" style="font-size: 20px;font-family: ABeeZee, sans-serif;border-radius: 10px;"></div>
+                            <div class="col-12 text-center" style="padding: 10px;margin-top: 20px;"><a class="btn btn-primary btn-lg" role="button" style="font-family: ABeeZee, sans-serif;" href="{% url 'form' %}">Login&nbsp;<i class="fa fa-chevron-right"></i></a></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>
