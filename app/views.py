@@ -13,20 +13,21 @@ def home(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('form')
+            return redirect('dashboard')
         else:
             messages.error(request, f'Invalid Credentials')
             return render(request, 'index.html')
     else:
         if request.user.is_authenticated:
-            return redirect('form')
+            return redirect('dashboard')
         else:
             return render(request, 'index.html')
 
 
 def form(request):
     if request.user.is_authenticated:
-        return render(request, 'input_form.html')
+        return render(request, 'input_form.html',
+                      {"first_name": request.user.first_name, "last_name": request.user.last_name})
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
