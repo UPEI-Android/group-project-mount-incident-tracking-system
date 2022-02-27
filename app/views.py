@@ -15,7 +15,7 @@ def home(request):
             login(request, user)
             return redirect('dashboard')
         else:
-            messages.error(request, f'Invalid Credentials')
+            messages.add_message(request, messages.WARNING, 'Invalid Credentials')
             return render(request, 'index.html')
     else:
         if request.user.is_authenticated:
@@ -43,6 +43,8 @@ def dashboard(request):
 
 def logout_view(request):
     if request.user.is_authenticated:
-        messages.success(request, f'User successfully logged out')
         logout(request)
+        messages.add_message(request, messages.SUCCESS, 'User Successfully Logged Out')
+    else:
+        messages.add_message(request, messages.WARNING, 'No User Authenticated')
     return redirect('home')
