@@ -7,6 +7,8 @@ class TestViews(TestCase):
     def setUp(self):
         self.home_url = reverse('home')
         self.dashboard_url = reverse('dashboard')
+        self.form_url = reverse('form')
+        self.logout_url = reverse('logout')
 
         self.user = {
             'Username': 'Paakow',
@@ -34,3 +36,15 @@ class TestViews(TestCase):
         response = self.client.post(self.home_url, self.anAuthUser, format='text/html')
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'index.html')
+
+    def test_form_page(self):
+        response = self.client.get(self.form_url)
+        self.assertEquals(response.status_code, 302)
+
+    def test_dashboard_page(self):
+        response = self.client.get(self.dashboard_url)
+        self.assertEquals(response.status_code, 302)
+
+    def test_logout_function(self):
+        response = self.client.get(self.logout_url)
+        self.assertEquals(response.status_code, 302)
