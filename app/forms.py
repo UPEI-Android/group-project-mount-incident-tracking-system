@@ -3,7 +3,7 @@ from django import forms
 
 class ReportForm(forms.Form):
     # Community choices
-    ST_DUNSTANS = ("NRSD", "St. Dunstans")
+    """  ST_DUNSTANS = ("NRSD", "St. Dunstans")
     HILLTOP = ("NRHT", "Hilltop")
     CARRIAGE_HOUSE = ("NHCH", "Carriage House")
     COMMUNITY_CARE = ("CCCH", "Community Care")
@@ -15,14 +15,15 @@ class ReportForm(forms.Form):
         HILLTOP,
         ST_DUNSTANS,
         OTHER
-    ]
-    community = forms.ChoiceField(choices=COMMUNITY_CHOICES)
+    ]"""
+
+   # community = forms.ChoiceField(choices=COMMUNITY_CHOICES)
 
     #Individuals Involved
     residents = forms.CharField(strip=True, required=False)
     staff = forms.CharField(strip=True, required=False)
     others = forms.CharField(strip=True, required=False)
-
+    """
     #Basic Incident Information
     name_of_writer = forms.CharField(max_length=120)
     incident_location = forms.CharField(max_length=120)
@@ -34,7 +35,7 @@ class ReportForm(forms.Form):
     employer_wcb_form = forms.BooleanField(required=False)
 
     # Type of Incident
-    NEAR_MISS = ("N", "Near Miss")
+     NEAR_MISS = ("N", "Near Miss")
     FALL = ("F", "Fall")
     MEDICATION_ERROR = ("M", "Medication Error")
     TREATMENT_ERROR = ("T", "Treatment Error")
@@ -45,9 +46,10 @@ class ReportForm(forms.Form):
     INCIDENT_TYPE_CHOICES = [
         ('', '-----'),
         NEAR_MISS, FALL, MEDICATION_ERROR, TREATMENT_ERROR,
-        LOSS_OF_PROPERTY, DEATH, OTHER_TYPE_OF_INCIDENT, STAFF_INJURY]
-    incident_type = forms.ChoiceField(choices=INCIDENT_TYPE_CHOICES)
+        LOSS_OF_PROPERTY, DEATH, OTHER_TYPE_OF_INCIDENT, STAFF_INJURY] """
 
+    #incident_type = forms.ChoiceField(choices=INCIDENT_TYPE_CHOICES)
+    """
     # Reason for Medication Error
     INCORRECT_RESIDENT = ("IRE", "Incorrect Resident")
     INCORRECT_ROUTE = ("IRO", "Incorrect Route")
@@ -67,14 +69,15 @@ class ReportForm(forms.Form):
         INCORRECT_NAME, INCORRECT_TIME, INCORRECT_DRUG, DRUG_MISSING,
         EXTRA_DOSE_GIVEN, DOSE_OMITTED, PHARMACY_ERROR, OTHER_MEDICATION_ERROR
     ]
-    medication_error = forms.MultipleChoiceField(choices=MEDICATION_ERROR_CHOICES)
+
+   # medication_error = forms.MultipleChoiceField(choices=MEDICATION_ERROR_CHOICES)
 
     #Incident Description
     incident_description = forms.CharField(strip=True)
-    action_taken = forms.CharField(strip=True)
+    action_taken = forms.CharField(strip=True)"""
 
     #Condition of Involved Individual
-    CONDITION_NORMAL = ("N", "Condition Normal")
+    """  CONDITION_NORMAL = ("N", "Condition Normal")
     CONDITION_UNCONSCIOUS = ("U", "Condition Unconscious")
     CONDITION_SEDATED = ("S", "Condition Sedated")
     CONDITION_DISORIENTED = ("D", "Condition Disoriented")
@@ -85,8 +88,9 @@ class ReportForm(forms.Form):
         CONDITION_SEDATED,
         CONDITION_DISORIENTED,
         CONDITION_OTHER
-    ]
-    condition = forms.ChoiceField(choices=CONDITION_CHOICES)
+    ] 
+
+    #condition = forms.ChoiceField(choices=CONDITION_CHOICES)
     condition_other_description = forms.CharField(strip=True, required=False)
 
     #Vital Signs
@@ -129,8 +133,9 @@ class ReportForm(forms.Form):
 
     #Signatures
     administrator_signature = forms.BooleanField()
-    physician_signature = forms.BooleanField()
+    physician_signature = forms.BooleanField()"""
 
+"""
     def clean(self):
         self.clean()
         form_data = self.cleaned_data
@@ -154,4 +159,4 @@ class ReportForm(forms.Form):
             raise forms.ValidationError('Physician Notification Error', code='No physician name or date')
         elif form_data['supervisor_notified'] & \
                 ((form_data['supervisor_name'] == '') | (form_data['supervisor_notification_date'] == '')):
-            raise forms.ValidationError('Supervisor Notification Error', code='No supervisor name or date')
+            raise forms.ValidationError('Supervisor Notification Error', code='No supervisor name or date') """

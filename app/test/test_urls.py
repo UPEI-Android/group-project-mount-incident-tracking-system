@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from app.views import home, form, dashboard
+from app.views import home, form, dashboard, logout_view
 
 
 class TestUrls(SimpleTestCase):
@@ -19,3 +19,8 @@ class TestUrls(SimpleTestCase):
         url = reverse('dashboard')
         print(resolve(url))
         self.assertEquals(resolve(url).func, dashboard)
+
+    def test_logout_url_is_resolved(self):
+        url = reverse('logout')
+        print(resolve(url))
+        self.assertEquals(resolve(url).func, logout_view)

@@ -44,7 +44,7 @@ def dashboard(request):
 def logout_view(request):
     if request.user.is_authenticated:
         logout(request)
-        messages.add_message(request, messages.SUCCESS, 'User Successfully Logged Out')
+        messages.add_message(request, messages.SUCCESS, 'User Successfully Logged Out',status= 200)
     else:
         messages.add_message(request, messages.WARNING, 'No User Authenticated')
     return redirect('home')
