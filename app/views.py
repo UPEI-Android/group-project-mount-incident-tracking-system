@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from app.forms import ReportForm
 
 
 # Create your views here.
@@ -26,8 +27,7 @@ def home(request):
 
 def form(request):
     if request.user.is_authenticated:
-        return render(request, 'input_form.html',
-                      {"first_name": request.user.first_name, "last_name": request.user.last_name})
+        return render(request, 'input_form.html', {"username": request.user.username})
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
@@ -48,3 +48,30 @@ def logout_view(request):
     else:
         messages.add_message(request, messages.WARNING, 'No User Authenticated')
     return redirect('home')
+
+
+def submit_report(request):
+    if request.user.is_authenticated:
+        #Create Report from the POST data
+        report = ReportForm(request.POST)
+        if report.is_valid():
+            #Create an instance of the database object to add the report status to
+            report_data = report.save(commit=False)
+            #Check if the resident is in a Nursing Care community to indicate that a Physician must review the report
+            if 'NR' in report_data.community:
+                report_data.report_status = 'PP'
+            else:
+                report_data.report_status = 'SU'
+            #Adds the reporting accounts username to the data and saves the data to the database
+            report_data.reporter_account = request.user.username
+            report_data.save()
+            #Displays a success message to the user and redirects them to the form page.
+            messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Submitted')
+            return redirect('form')
+        else:
+            #Displays an error message to the user and redirects them to the form page.
+            messages.add_message(request, messages.WARNING, 'Error in Form')
+            return redirect('form')
+    else:
+        messages.error(request, f'User is not authenticated')
+        return redirect('home')
