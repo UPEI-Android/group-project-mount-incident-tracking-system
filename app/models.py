@@ -1,9 +1,5 @@
 from django.db import models
 
-# Database configuration here
-
-
-
 
 class Report(models.Model):
 
@@ -132,4 +128,3 @@ class Report(models.Model):
         choices=STATUS_CHOICES,
         default=PARTIALLY_COMPLETED
     )
-
