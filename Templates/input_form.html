@@ -20,11 +20,18 @@
 <body style="font-family: ABeeZee, sans-serif;font-size: 18px;">
     <div class="container" style="margin-bottom: 50px;">
         <div class="row d-flex justify-content-center justify-content-sm-center justify-content-xl-center">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} col-12 text-center">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
             <div class="col-12" style="margin-bottom: 40px;">
                 <div style="text-align: center;margin-top: 25px;"><img src="{% static 'img/The-Mount-Main-Logo-JPG.png' %}" width="100">
                     <p style="font-family: ABeeZee, sans-serif;font-size: 35px;"> The Mount Continuing Care<br>Incident Reporting Form</p>
                 </div>
-                <p class="text-center">You are logged in as:&nbsp; {{ first_name }} {{ last_name }}</p>
+                <p class="text-center">You are logged in as:&nbsp; {{ username }}</p>
                 <ul class="nav nav-tabs d-flex justify-content-center">
                     <li class="nav-item"><a class="nav-link active" href="#">Reporting Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Page 1</a></li>
@@ -33,61 +40,62 @@
             </div>
             <div class="col">
                 <div>
-                    <form>
+                    <form action="{% url 'submit' %}" method="POST">
+                        {% csrf_token %}
                         <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
                             <p>Individuals Involved:</p>
-                            <p>Resident(s):</p><textarea class="form-control" name="Residents Involved" placeholder="Residents"></textarea>
+                            <p>Resident(s):</p><textarea class="form-control" name="residents" placeholder="Residents"></textarea>
                             <div class="row">
                                 <div class="col-6 col-md-4 col-xl-2">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-1" name="Resident Type"><label class="form-check-label" for="formCheck-1">Nursing Care SD</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-1" name="community" value="NRSD"><label class="form-check-label" for="formCheck-1">Nursing Care SD</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-xl-2">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-2" name="Resident Type"><label class="form-check-label" for="formCheck-2">Nursing Care HT</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-2" name="community" value="NRHT"><label class="form-check-label" for="formCheck-2">Nursing Care HT</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-xl-2">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-3" name="Resident Type"><label class="form-check-label" for="formCheck-3">Nursing Care CH</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-3" name="community" value="NRCH"><label class="form-check-label" for="formCheck-3">Nursing Care CH</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-xl-2">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-4" name="Resident Type"><label class="form-check-label" for="formCheck-4">Community Care</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-4" name="community" value="CCCC"><label class="form-check-label" for="formCheck-4">Community Care</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-xl-2">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-5" name="Resident Type"><label class="form-check-label" for="formCheck-5">Other (check one)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-5" name="community" value="OTHR"><label class="form-check-label" for="formCheck-5">Other (check one)</label></div>
                                 </div>
                             </div>
-                            <p>Staff:</p><input class="form-control" type="text" placeholder="Staff" name="Staff Involved">
-                            <p>Other(s): (visitor, guest, etc.)</p><textarea class="form-control" name="Others Involved" placeholder="Others"></textarea>
-                            <p>Name of Writer:</p><input class="form-control" type="text" name="Writer Name" placeholder="Name">
-                            <p>Date and Time of Incident:</p><input class="form-control" type="datetime-local" name="Incident DateTime">
-                            <p>Incident Location:</p><input class="form-control" type="text" name="Location" placeholder="Location">
+                            <p>Staff:</p><input class="form-control" type="text" placeholder="Staff" name="staff">
+                            <p>Other(s): (visitor, guest, etc.)</p><textarea class="form-control" name="others" placeholder="Others"></textarea>
+                            <p>Name of Writer:</p><input class="form-control" type="text" name="name_of_writer" placeholder="Name">
+                            <p>Date and Time of Incident:</p><input class="form-control" type="datetime-local" name="date_of_incident">
+                            <p>Incident Location:</p><input class="form-control" type="text" name="incident_location" placeholder="Location">
                         </div>
-                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 20 px;margin-top: 15px;margin-bottom: 15px;">
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 20px;margin-top: 15px;margin-bottom: 15px;">
                             <div class="row">
                                 <div class="col-12">
                                     <p>Type of Incident:</p>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-13" name="Incident Type" value="Near Miss (1)"><label class="form-check-label" for="formCheck-13">Near Miss (1)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-13" name="near_miss" value="N"><label class="form-check-label" for="formCheck-13">Near Miss (1)</label></div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-20" name="Incident Type" value="Fall (2)"><label class="form-check-label" for="formCheck-20">Fall (2)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-20" name="fall" value="F"><label class="form-check-label" for="formCheck-20">Fall (2)</label></div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-19" name="Incident Type" value="Medication Error (3)"><label class="form-check-label" for="formCheck-19">Medication Error (3)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-19" name="medication_error" value="M"><label class="form-check-label" for="formCheck-19">Medication Error (3)</label></div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-18" name="Incident Type" value="Treatment Error (4)"><label class="form-check-label" for="formCheck-18">Treatment Error (4)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-18" name="treatment_error" value="T"><label class="form-check-label" for="formCheck-18">Treatment Error (4)</label></div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-17" name="Incident Type" value="Loss of Property (5)"><label class="form-check-label" for="formCheck-17">Loss of Property (5)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-17" name="loss_of_property" value="L"><label class="form-check-label" for="formCheck-17">Loss of Property (5)</label></div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-16" name="Incident Type" value="Death (6)"><label class="form-check-label" for="formCheck-16">Death (6)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-16" name="death" value="D"><label class="form-check-label" for="formCheck-16">Death (6)</label></div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-15" name="Incident Type" value="Other (7)"><label class="form-check-label" for="formCheck-15">Other (7)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-15" name="other_type_of_incident" value="O"><label class="form-check-label" for="formCheck-15">Other (7)</label></div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-14" name="Incident Type" value="Staff Injury (8)"><label class="form-check-label" for="formCheck-14">Staff Injury (8)</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-14" name="staff_injury" value="S"><label class="form-check-label" for="formCheck-14">Staff Injury (8)</label></div>
                                 </div>
                             </div>
                         </div>
@@ -97,75 +105,59 @@
                                     <p>Fill out reason for medication error:</p>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-8" name="Medication Error Reason" value="Incorrect Resident"><label class="form-check-label" for="formCheck-8">Incorrect Resident</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-8" name="incorrect_resident" value="IRE"><label class="form-check-label" for="formCheck-8">Incorrect Resident</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-31" name="Medication Error Reason" value="Incorrect Route"><label class="form-check-label" for="formCheck-31">Incorrect Route</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-31" name="incorrect_route" value="IRO"><label class="form-check-label" for="formCheck-31">Incorrect Route</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-30" name="Medication Error Reason" value="Incorrect Dose"><label class="form-check-label" for="formCheck-30">Incorrect Dose</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-30" name="incorrect_dose" value="IDO"><label class="form-check-label" for="formCheck-30">Incorrect Dose</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-29" name="Medication Error Reason" value="Incorrect Label"><label class="form-check-label" for="formCheck-29">Incorrect Label</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-29" name="incorrect_label" value="ILA"><label class="form-check-label" for="formCheck-29">Incorrect Label</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-28" name="Medication Error Reason" value="Incorrect Name"><label class="form-check-label" for="formCheck-28">Incorrect Name</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-28" name="incorrect_name" value="INA"><label class="form-check-label" for="formCheck-28">Incorrect Name</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-27" name="Medication Error Reason" value="Drug Missing"><label class="form-check-label" for="formCheck-27">Drug Missing</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-27" name="drug_missing" value="DMI"><label class="form-check-label" for="formCheck-27">Drug Missing</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-26" name="Medication Error Reason" value="Incorrect Time"><label class="form-check-label" for="formCheck-26">Incorrect Time</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-26" name="incorrect_time" value="ITI"><label class="form-check-label" for="formCheck-26">Incorrect Time</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-25" name="Medication Error Reason" value="Extra Dose Given"><label class="form-check-label" for="formCheck-25">Extra Dose Given</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-25" name="extra_dose_given" value="EDG"><label class="form-check-label" for="formCheck-25">Extra Dose Given</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-24" name="Medication Error Reason" value="Incorrect Drug"><label class="form-check-label" for="formCheck-24">Incorrect Drug</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-24" name="incorrect_drug" value="IDR"><label class="form-check-label" for="formCheck-24">Incorrect Drug</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-23" name="Medication Error Reason" value="Dose Omitted"><label class="form-check-label" for="formCheck-23">Dose Omitted</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-23" name="dose_omitted" value="DOM"><label class="form-check-label" for="formCheck-23">Dose Omitted</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-22" name="Medication Error Reason" value="Pharmacy Error"><label class="form-check-label" for="formCheck-22">Pharmacy Error</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-22" name="pharmacy_error" value="PER"><label class="form-check-label" for="formCheck-22">Pharmacy Error</label></div>
                                 </div>
                                 <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-21" name="Medication Error Reason" value="Other"><label class="form-check-label" for="formCheck-21">Other</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-21" name="other_medication_error" value="OME"><label class="form-check-label" for="formCheck-21">Other</label></div>
                                 </div>
                             </div>
                         </div>
                         <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 20px;margin-top: 15px;margin-bottom: 15px;">
                             <div class="row" style="margin-top: 20px;">
-                                <div class="col-12 col-md-6 col-lg-4 col-xl-4">
-                                    <p>Falls Risk Assessment Done?</p>
+                                <div class="col-8 col-md-4 col-xl-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-6" name="fall_risk_assessment" value="True"><label class="form-check-label" for="formCheck-6">Falls Risk Assessment Done?</label></div>
                                 </div>
-                                <div class="col-6 col-md-3 col-xl-2">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-6" name="Falls Risk Assesment" value="Yes"><label class="form-check-label" for="formCheck-6">Yes</label></div>
+                                <div class="col-8 col-md-4 col-xl-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-9" name="employee_wcb_form" value="True"><label class="form-check-label" for="formCheck-9">Employee WCB Form 6 done within 6 months?</label></div>
                                 </div>
-                                <div class="col-6 col-md-3 col-xl-2">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-7" name="Falls Risk Assesment" value="No"><label class="form-check-label" for="formCheck-7">No (No for CC)</label></div>
-                                </div>
-                            </div>
-                            <div class="row" style="margin-top: 20px;">
-                                <div class="col-8 col-md-4">
-                                    <p>Employee WCB Form 6 done within 6 months?</p>
-                                </div>
-                                <div class="col-4 col-md-2">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-9" name="WCB Form 6" value="Yes"><label class="form-check-label" for="formCheck-9">Yes</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-10" name="WCB Form 6" value="No"><label class="form-check-label" for="formCheck-10">No</label></div>
-                                </div>
-                                <div class="col-8 col-md-4">
-                                    <p>Employer WCB form 7 done within 3 days? (Can be done online or paper)</p>
-                                </div>
-                                <div class="col-4 col-md-2">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-11" name="WCB Form 7" value="Yes"><label class="form-check-label" for="formCheck-11">Yes</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-12" name="WCB Form 7" value="No"><label class="form-check-label" for="formCheck-12">No</label></div>
+                                <div class="col-8 col-md-4 col-xl-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-11" name="employer_wcb_form" value="True"><label class="form-check-label" for="formCheck-11">Employer WCB form 7 done within 3 days? (Can be done online or paper)</label></div>
                                 </div>
                             </div>
                         </div>
                         <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
-                            <p>Describe the Incident:</p><textarea class="form-control form-control-lg" name="Incident Description"></textarea>
-                            <p>Action Taken</p><textarea class="form-control form-control-lg" name="Action Taken"></textarea>
+                            <p>Describe the Incident:</p><textarea class="form-control form-control-lg" name="incident_description"></textarea>
+                            <p>Action Taken</p><textarea class="form-control form-control-lg" name="action_taken"></textarea>
                         </div>
                         <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
                             <div class="row">
@@ -173,63 +165,63 @@
                                     <p>Resident/Staff/Visitor Condition as time of incident:</p>
                                 </div>
                                 <div class="col-6 col-md-3 col-lg-3">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-32" name="Condition at time of incident" value="Normal"><label class="form-check-label" for="formCheck-32">Normal</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-32" name="condition" value="N"><label class="form-check-label" for="formCheck-32">Normal</label></div>
                                 </div>
                                 <div class="col-6 col-md-3 col-lg-3">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-36" name="Condition at time of incident" value="Unconscious"><label class="form-check-label" for="formCheck-36">Unconscious</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-36" name="condition" value="U"><label class="form-check-label" for="formCheck-36">Unconscious</label></div>
                                 </div>
                                 <div class="col-6 col-md-3 col-lg-3">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-35" name="Condition at time of incident" value="Sedated"><label class="form-check-label" for="formCheck-35">Sedated</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-35" name="condition" value="S"><label class="form-check-label" for="formCheck-35">Sedated</label></div>
                                 </div>
                                 <div class="col-6 col-md-3 col-lg-3">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-34" name="Condition at time of incident" value="Disoriented"><label class="form-check-label" for="formCheck-34">Disoriented</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-34" name="condition" value="D"><label class="form-check-label" for="formCheck-34">Disoriented</label></div>
                                 </div>
                                 <div class="col-12 col-lg-3">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-33" name="Condition at time of incident" value="Other (Specify)"><label class="form-check-label" for="formCheck-33">Other (Specify):</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-33" name="condition" value="O"><label class="form-check-label" for="formCheck-33">Other (Specify):</label></div>
                                 </div>
-                                <div class="col-12"><textarea class="form-control" name="Condition at time of incident other description"></textarea></div>
+                                <div class="col-12"><textarea class="form-control" name="condition_other_description"></textarea></div>
                                 <div class="col-12">
                                     <p>Vital Signs:</p>
                                 </div>
                                 <div class="col-4 col-sm-2">
                                     <p class="text-end">T</p>
                                 </div>
-                                <div class="col-8 col-sm-4"><input class="form-control" type="text" name="T"></div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="T"></div>
                                 <div class="col-4 col-sm-2">
                                     <p class="text-end">P</p>
                                 </div>
-                                <div class="col-8 col-sm-4"><input class="form-control" type="text" name="P"></div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="P"></div>
                                 <div class="col-4 col-sm-2">
                                     <p class="text-end">R</p>
                                 </div>
-                                <div class="col-8 col-sm-4"><input class="form-control" type="text" name="R"></div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="R"></div>
                                 <div class="col-4 col-sm-2">
                                     <p class="text-end">BP</p>
                                 </div>
-                                <div class="col-8 col-sm-4"><input class="form-control" type="text" name="BP"></div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="BP"></div>
                                 <div class="col-4 col-sm-2">
                                     <p class="text-end">Sp02</p>
                                 </div>
-                                <div class="col-8 col-sm-4"><input class="form-control" type="text" name="Sp02"></div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="SpO2"></div>
                                 <div class="col-4 col-sm-2">
                                     <p class="text-end">Blood Sugar</p>
                                 </div>
-                                <div class="col-8 col-sm-4"><input class="form-control" type="text" name="Blood Sugar"></div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="blood_sugar"></div>
                                 <div class="col-12">
                                     <p>Neurovital Signs:</p>
                                 </div>
                                 <div class="col-4 col-lg-2">
                                     <p class="text-end">Pupil Size L</p>
                                 </div>
-                                <div class="col-8 col-lg-2"><input class="form-control" type="text" name="Pupil Size Left"></div>
+                                <div class="col-8 col-lg-2"><input class="form-control" type="number" name="pupil_size_L"></div>
                                 <div class="col-4 col-lg-2">
                                     <p class="text-end">Pupil Size R</p>
                                 </div>
-                                <div class="col-8 col-lg-2"><input class="form-control" type="text" name="Pupil Size Right"></div>
+                                <div class="col-8 col-lg-2"><input class="form-control" type="number" name="pupil_size_R"></div>
                                 <div class="col-4 col-lg-2">
                                     <p class="text-end">CS</p>
                                 </div>
-                                <div class="col-8 col-lg-2"><input class="form-control" type="text" name="CS"></div>
+                                <div class="col-8 col-lg-2"><input class="form-control" type="number" name="CS"></div>
                                 <div class="col-12">
                                     <p class="text-start">(Complete NVS Record)</p>
                                 </div>
@@ -240,38 +232,26 @@
                                 <div class="col-12">
                                     <p class="text-center" style="font-weight: bold;text-decoration: underline;font-size: 24px;">MUST BE FILLED OUT</p>
                                 </div>
-                                <div class="col-8 col-md-4 col-lg-3">
-                                    <p>Family Notified:</p>
-                                </div>
-                                <div class="col-4 col-md-2 col-lg-1">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-37" name="Family Notified" value="Yes"><label class="form-check-label" for="formCheck-37">Yes</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-38" name="Family Notified" value="No"><label class="form-check-label" for="formCheck-38">No</label></div>
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-37" name="family_notified" value="True"><label class="form-check-label" for="formCheck-37">Family Notified</label></div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-8">
-                                    <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="Notified Family Member Name">
-                                    <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="DateTime Family Notified">
+                                    <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="family_name">
+                                    <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="family_notification_date">
                                 </div>
-                                <div class="col-8 col-md-4 col-lg-3">
-                                    <p>Physician Notified:</p>
-                                </div>
-                                <div class="col-4 col-md-2 col-lg-1">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-41" name="Physician Notified" value="Yes"><label class="form-check-label" for="formCheck-41">Yes</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-42" name="Physician Notified" value="No"><label class="form-check-label" for="formCheck-42">No</label></div>
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-41" name="physician_notified" value="True"><label class="form-check-label" for="formCheck-41">Physician Notified</label></div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-8">
-                                    <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="Notified Physician Name">
-                                    <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="DateTime Physician Notified">
+                                    <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="physician_name">
+                                    <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="physician_notification_date">
                                 </div>
-                                <div class="col-8 col-md-4 col-lg-3">
-                                    <p>Supervisor Notified:</p>
-                                </div>
-                                <div class="col-4 col-md-2 col-lg-1">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-39" name="Supervisor Notified" value="Yes"><label class="form-check-label" for="formCheck-39">Yes</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-40" name="Supervisor Notified" value="No"><label class="form-check-label" for="formCheck-40">No</label></div>
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-39" name="supervisor_notified" value="True"><label class="form-check-label" for="formCheck-39">Supervisor Notified</label></div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-8">
-                                    <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="Notified Supervisor Name">
-                                    <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="DateTime Supervisor Notified">
+                                    <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="supervisor_name">
+                                    <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="supervisor_notification_date">
                                 </div>
                             </div>
                         </div>
@@ -280,39 +260,27 @@
                                 <div class="col-12">
                                     <p>Action or Treatment prescribed by the physician/supervisor:</p>
                                 </div>
-                                <div class="col-12"><textarea class="form-control" name="Prescribed Action/Treatment"></textarea></div>
+                                <div class="col-12"><textarea class="form-control" name="action_treatment_prescribed"></textarea></div>
                                 <div class="col-12">
                                     <p>What was the cause of the incident?</p>
                                 </div>
-                                <div class="col-12"><textarea class="form-control" name="Incident Cause"></textarea></div>
+                                <div class="col-12"><textarea class="form-control" name="cause_of_incident"></textarea></div>
                                 <div class="col-12">
                                     <p>What would prevent similar incidents?</p>
                                 </div>
-                                <div class="col-12"><textarea class="form-control" name="Incident Prevention"></textarea></div>
+                                <div class="col-12"><textarea class="form-control" name="prevention_of_incident"></textarea></div>
                             </div>
                         </div>
                         <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
                             <div class="row">
-                                <div class="col-8 col-md-4 col-lg-3">
-                                    <p>Incident Documented on Chart</p>
+                                <div class="col-12 col-md-4 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-43" name="incident_documented_on_chart" value="True"><label class="form-check-label" for="formCheck-43">Incident Documented on Chart</label></div>
                                 </div>
-                                <div class="col-4 col-md-2 col-lg-1">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-43" name="Documented on Chart" value="Yes"><label class="form-check-label" for="formCheck-43">Yes</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-44" name="Documented on Chart" value="No"><label class="form-check-label" for="formCheck-44">No</label></div>
+                                <div class="col-12 col-md-4 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-47" name="post_incident_huddle_held" value="True"><label class="form-check-label" for="formCheck-47">Post Incident Huddle Held</label></div>
                                 </div>
-                                <div class="col-8 col-md-4 col-lg-3">
-                                    <p>Post Incident Huddle Held</p>
-                                </div>
-                                <div class="col-4 col-md-2 col-lg-1">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-47" name="Post Incident Huddle Held" value="Yes"><label class="form-check-label" for="formCheck-47">Yes</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-48" name="Post Incident Huddle Held" value="No"><label class="form-check-label" for="formCheck-48">No</label></div>
-                                </div>
-                                <div class="col-8 col-md-4 col-lg-3">
-                                    <p>Post Incident Huddle Documented on Chart</p>
-                                </div>
-                                <div class="col-4 col-md-2 col-lg-1">
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-45" name="Post Incident Huddle on Chart" value="Yes"><label class="form-check-label" for="formCheck-45">Yes</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-46" name="Post Incident Huddle on Chart" value="No"><label class="form-check-label" for="formCheck-46">No</label></div>
+                                <div class="col-12 col-md-4 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-45" name="post_incident_huddle_charted" value="True"><label class="form-check-label" for="formCheck-45">Post Incident Huddle Documented on Chart</label></div>
                                 </div>
                                 <div class="col-12">
                                     <p style="color: var(--bs-red);font-style: italic;text-decoration:  underline;">SIGNATURES HERE (FORMAT/PROTOCOL TO BE DETERMINED)</p>
@@ -324,7 +292,7 @@
                                 <div class="col-12">
                                     <p>Notes for follow-up reccomendations:</p>
                                 </div>
-                                <div class="col-12"><textarea class="form-control" rows="8" name="FollowUp Reccomendations"></textarea></div>
+                                <div class="col-12"><textarea class="form-control" rows="8" name="follow_up_notes"></textarea></div>
                             </div>
                         </div>
                         <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
@@ -335,7 +303,12 @@
                                 <div class="col-12">
                                     <p>Physician Comments:</p>
                                 </div>
-                                <div class="col-12"><textarea class="form-control form-control-lg" name="Physician Comments"></textarea></div>
+                                <div class="col-12"><textarea class="form-control form-control-lg" name="physician_comments"></textarea></div>
+                            </div>
+                            <div class="row" style="margin-top: 20px">
+                                <div class="col-12">
+                                  <button class="btn btn-primary btn-lg" role="button" style="font-family: ABeeZee, sans-serif;" type="submit">Submit</button>
+                                </div>
                             </div>
                         </div>
                     </form>

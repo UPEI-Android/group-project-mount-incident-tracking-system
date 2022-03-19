@@ -23,8 +23,7 @@ class ReportAdmin(admin.ModelAdmin):
                        ('extra_dose_given', 'dose_omitted', 'pharmacy_error', 'other_medication_error'))
         }),
         ('Incident Description', {
-            'fields': ('condition_normal', 'condition_unconscious', 'condition_sedated',
-                       'condition_disoriented', 'condition_other', 'condition_other_description')
+            'fields': ('condition', 'condition_other_description')
         }),
         ('Vital Signs', {
             'fields': (('T', 'P', 'R'), ('BP', 'SpO2', 'blood_sugar'))
@@ -45,7 +44,7 @@ class ReportAdmin(admin.ModelAdmin):
         }),
         #TODO Add fields tracking submission account and completed account
         ('Automatically Generated Information', {
-            'fields': ('report_submission_date', 'report_statuses')
+            'fields': ('report_status', 'reporter_account')
         })
     )
 
