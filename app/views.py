@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from app.models import Report
 from app.forms import ReportForm
 
 
@@ -34,12 +35,9 @@ def form(request):
 
 
 def dashboard(request):
-
-    #
-    return render(request, "dashboard.html")
-    #
     if request.user.is_authenticated:
-        return render(request, "dashboard.html")
+        reports = Report.objects.all()
+        return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
