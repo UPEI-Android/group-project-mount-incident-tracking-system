@@ -43,6 +43,15 @@ def dashboard(request):
         return redirect('home')
 
 
+def read_report(request, report_id):
+    if request.user.is_authenticated:
+        report = Report.objects.filter(id=report_id)
+        return render(request, "input_form.html", {"report_id": report_id, "report": report[0]})
+    else:
+        messages.error(request, f'User is not authenticated')
+        return redirect('home')
+
+
 def logout_view(request):
     if request.user.is_authenticated:
         logout(request)
