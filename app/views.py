@@ -31,8 +31,11 @@ def form(request):
             if request.POST['submit'] == "submit":
                 # Create Report from the POST data
                 report = ReportForm(request.POST)
+                report.full_clean()
+                report.validate()
                 if report.is_valid():
                     # Create an instance of the database object to add the report status to
+
                     report_data = report.save(commit=False)
                     # Check if the resident is in a Nursing Care community to indicate that a Physician must review the report
                     if 'NC' in report_data.community:
@@ -47,11 +50,27 @@ def form(request):
                     return render(request, 'input_form.html', {"username": request.user.username})
                 else:
                     # Displays an error message to the user and redirects them to the form page.
+                    for error in report.errors:
+                        print(error)
                     messages.add_message(request, messages.WARNING, 'Error in Form')
                     return render(request, 'input_form.html', {"username": request.user.username, "report": report})
             elif request.POST['submit'] == "save":
-                #Save Model without checking for empty fields
-                print("save")
+                # Save Model without checking for empty fields
+                # Create Report from the POST data
+                report = ReportForm(request.POST)
+
+                if report.is_valid():
+                    report_data = report.save(commit=False)
+                    report_data.report_status = 'PC'
+                    report_data.reporter_account = request.user.username
+                    report_data.save()
+                    messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Submitted')
+                    return render(request, 'input_form.html', {"username": request.user.username})
+                else:
+                    for error in report.errors:
+                        print(error)
+                    messages.add_message(request, messages.WARNING, 'Error in Form')
+                    return render(request, 'input_form.html', {"username": request.user.username})
 
         return render(request, 'input_form.html', {"username": request.user.username})
     else:
