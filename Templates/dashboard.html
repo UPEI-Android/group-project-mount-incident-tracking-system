@@ -20,14 +20,14 @@
 
 <body style="font-family: ABeeZee, sans-serif;">
     <div style="box-shadow: 0px 0px 10px var(--bs-gray-500);padding-top: 15px;">
-        <p class="text-end" style="margin-bottom: 0px;margin-right: 35px;margin-left: 35px;"><i class="fa fa-user" style="font-size: 20px;"></i>&nbsp;Lindsey Dickieson</p>
+        <p class="text-end" style="margin-bottom: 0px;margin-right: 35px;margin-left: 35px;"><i class="fa fa-user" style="font-size: 20px;"></i>&nbsp;{{ username }}</p>
         <nav class="navbar navbar-light navbar-expand-md" style="padding: 15px;">
             <div class="container-fluid"><a class="navbar-brand" href="#"><img src="{% static 'img/The-Mount-Main-Logo-JPG.png' %}" width="80"></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1" style="padding: 8px 12px;padding-right: 16px;padding-left: 16px;border-width: 2px;"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse text-end d-md-flex justify-content-md-end" id="navcol-1">
                     <ul class="navbar-nav" style="font-size: 20px;">
-                        <li class="nav-item"><a class="nav-link" href="input_form.html">Reporting Form</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="dashboard.html">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Logout</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'form' %}">Reporting Form</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -82,7 +82,60 @@
                     </form>
                 </div>
             </div>
-        </div><a href="read-only-report.html">
+        </div>
+        {% for report in reports %}
+            <a style="text-decoration-line: none" href="/read_report/{{ report.id }}">
+            <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 0px;">
+                <div class="row">
+                    <div class="col-4" style="font-size: 18px;font-weight: bold;">
+                        <p>
+                            {% if report.residents != "" %}Residents Name: {{ report.residents }} <br/>{% endif %}
+                            {% if report.staff != "" %} Staff Name: {{ report.staff }} <br/>{% endif %}
+                            {% if report.others != "" %} Others Name: {{ report.others }} <br/>{% endif %}
+                        </p>
+                    </div>
+                    <div class="col-8" style="font-size: 18px;font-weight: bold;">
+                        <p>{{ report.date_of_incident }}</p>
+                    </div>
+                    <div class="col-4">
+                        <p>Reporter Name: {{ report.name_of_writer }}</p>
+                    </div>
+                    <div class="col-8">
+                        <p>Location: {{ report.incident_location }}</p>
+                    </div>
+                    <div class="col-4">
+                        <p>Community: {{ report.community }}</p>
+                    </div>
+                    <div class="col-8">
+                        <p>Incident Type:
+                            {% if report.near_miss %}Near Miss, {% endif %}
+                            {% if report.fall %}Fall, {% endif %}
+                            {% if report.medication_error %}Medication Error (
+                                {% if report.incorrect_resident %}Incorrect Resident, {% endif %}
+                                {% if report.incorrect_route %}Incorrect Route, {% endif %}
+                                {% if report.incorrect_dose %}Incorrect Dose, {% endif %}
+                                {% if report.incorrect_label %}Incorrect Label, {% endif %}
+                                {% if report.incorrect_name %}Incorrect Name, {% endif %}
+                                {% if report.incorrect_time %}Incorrect Time, {% endif %}
+                                {% if report.incorrect_drug %}Incorrect Drug, {% endif %}
+                                {% if report.drug_missing %}Drug Missing, {% endif %}
+                                {% if report.extra_dose_given %}Extra Dose Given, {% endif %}
+                                {% if report.dose_omitted %}Dose Omitted, {% endif %}
+                                {% if report.pharmacy_error %}Pharmacy Error, {% endif %}
+                                {% if report.other_medication_error %}Other{% endif %}
+                                ), {% endif %}
+                            {% if report.treatment_error %}Treatment Error, {% endif %}
+                            {% if report.loss_of_property %}Loss of Property, {% endif %}
+                            {% if report.death %}Death, {% endif %}
+                            {% if report.other_type_of_incicent %}Other, {% endif %}
+                            {% if report.staff_injury %}Staff Injury{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+
+        <a href="read-only-report.html">
             <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 0px;">
                 <div class="row">
                     <div class="col-6" style="font-size: 18px;font-weight: bold;">
