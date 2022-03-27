@@ -140,18 +140,19 @@ def sign_off_report(request, report_id):
       
 def csv_export(request):
     if request.POST:
-        this_form = request.POST.form
-        if this_form.is_valid():
-            response = HttpResponse(
-                content_type='text/csv',
-                headers={'Content-Disposition': 'attachment; filename="Reports.csv"'},
-            )
-            writer = csv.writer(response)
-            writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
-            for key, value in this_form.cleaned_data.iteritems():
-                writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+        #this_form = request.POST.form
+        response = HttpResponse(
+            content_type='text/csv',
+            headers={'Content-Disposition': 'attachment; filename="Reports.csv"'},
+        )
+        writer = csv.writer(response)
+        writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
+        #for key, value in this_form.cleaned_data.iteritems():
+            #writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+        #if this_form.is_valid():
 
         return response
+    return redirect('form')
 
 
 
