@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from app.models import Report
 from app.forms import ReportForm
+from django import forms
+import csv
 
 
 # Create your views here.
@@ -102,6 +104,12 @@ def edit_report(request, report_id):
         return redirect('home')
 
 
+def dashboard_export(request):
+    if request.user.is_authenticated:
+        reports = Report.objects.all()
+        return render(request, "dashboard-export.html", {"username": request.user.username, "reports": reports})
+      
+      
 def mark_report_complete(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
@@ -117,7 +125,7 @@ def mark_report_complete(request, report_id):
 
 
 def sign_off_report(request, report_id):
-    if request.user.is_authenticated:
+      if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
         if report.report_status == "PP":
             report.report_status = "SU"
@@ -128,6 +136,23 @@ def sign_off_report(request, report_id):
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
+      
+      
+def csv_export(request):
+    if request.POST:
+        this_form = request.POST.form
+        if this_form.is_valid():
+            response = HttpResponse(
+                content_type='text/csv',
+                headers={'Content-Disposition': 'attachment; filename="Reports.csv"'},
+            )
+            writer = csv.writer(response)
+            writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
+            for key, value in this_form.cleaned_data.iteritems():
+                writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+
+        return response
+
 
 
 def dashboard(request):
