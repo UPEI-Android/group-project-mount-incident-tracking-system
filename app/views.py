@@ -81,10 +81,24 @@ def form(request):
         return redirect('home')
 
 
-def dashboard(request):
+def read_report(request, report_id):
     if request.user.is_authenticated:
-        reports = Report.objects.all()
-        return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
+        report = Report.objects.filter(id=report_id)[0]
+        return render(request, "read_only_report.html", {"report_id": report_id, "report": report})
+    else:
+        messages.error(request, f'User is not authenticated')
+        return redirect('home')
+
+
+def edit_report(request, report_id):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            # TODO: Add functionality to save submitted and unfinished reports
+            report = Report.objects.filter(id=report_id)[0]
+            return render(request, "edit_report.html", {"report": report})
+        else:
+            report = Report.objects.filter(id=report_id)[0]
+            return render(request, "edit_report.html", {"username": request.user.username, "report": report})
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
@@ -94,11 +108,36 @@ def dashboard_export(request):
     if request.user.is_authenticated:
         reports = Report.objects.all()
         return render(request, "dashboard-export.html", {"username": request.user.username, "reports": reports})
+      
+      
+def mark_report_complete(request, report_id):
+    if request.user.is_authenticated:
+        report = Report.objects.filter(id=report_id)[0]
+        if report.report_status == "SU":
+            report.report_status = "CO"
+            report.save()
+        else:
+            messages.error(request, f'Report cannot be marked as complete')
+            return redirect('read_report', report_id=report_id)
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
 
 
+def sign_off_report(request, report_id):
+      if request.user.is_authenticated:
+        report = Report.objects.filter(id=report_id)[0]
+        if report.report_status == "PP":
+            report.report_status = "SU"
+            report.save()
+        else:
+            messages.error(request, f'Cannot sign off on report')
+            return redirect('read_report', report_id=report_id)
+    else:
+        messages.error(request, f'User is not authenticated')
+        return redirect('home')
+      
+      
 def csv_export(request):
     if request.POST:
         this_form = request.POST.form
@@ -115,10 +154,11 @@ def csv_export(request):
         return response
 
 
-def read_report(request, report_id):
+
+def dashboard(request):
     if request.user.is_authenticated:
-        report = Report.objects.filter(id=report_id)
-        return render(request, "input_form.html", {"report_id": report_id, "report": report[0]})
+        reports = Report.objects.all()
+        return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')

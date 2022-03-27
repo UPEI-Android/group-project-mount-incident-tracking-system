@@ -82,21 +82,21 @@ class ReportForm(forms.ModelForm):
                                                  code='Empty Resident'))
 
         # Check if the incident type has been selected
-        if (not form_data.get('near_miss')) & (not form_data.get('fall')) & \
-                (not form_data.get('medication_error')) & (not form_data.get('treatment_error')) & \
-                (not form_data.get('loss_of_property')) & (not form_data.get('death')) & \
-                (not form_data.get('other_type_of_incident')) & (not form_data.get('staff_injury')):
+        if ((form_data.get('near_miss') is None) & (form_data.get('fall') is None) &
+                (form_data.get('medication_error') is None) & (form_data.get('treatment_error') is None) &
+                (form_data.get('loss_of_property') is None) & (form_data.get('death') is None) &
+                (form_data.get('other_type_of_incident') is None) & (form_data.get('staff_injury') is None)):
             self.add_error('other_type_of_incident',
                            forms.ValidationError('Please select incident type', code='Empty Incident Type'))
 
         # Check if the medication error has been selected
-        if (form_data.get('medication_error') is not None) & (not form_data.get('incorrect_resident')) & \
-                (not form_data.get('incorrect_route')) & (not form_data.get('incorrect_dose')) & \
-                (not form_data.get('incorrect_label')) & (not form_data.get('incorrect_name')) & \
-                (not form_data.get('drug_missing')) & (not form_data.get('incorrect_time')) & \
-                (not form_data.get('extra_dose_given')) & (not form_data.get('incorrect_drug')) & \
-                (not form_data.get('dose_omitted')) & (not form_data.get('pharmacy_error')) & \
-                (not form_data.get('other_medication_error')):
+        if ((form_data.get('medication_error') is not None) & (form_data.get('incorrect_resident') is None) &
+                (form_data.get('incorrect_route') is None) & (form_data.get('incorrect_dose') is None) &
+                (form_data.get('incorrect_label') is None) & (form_data.get('incorrect_name') is None) &
+                (form_data.get('drug_missing') is None) & (form_data.get('incorrect_time') is None) &
+                (form_data.get('extra_dose_given') is None) & (form_data.get('incorrect_drug') is None) &
+                (form_data.get('dose_omitted') is None) & (form_data.get('pharmacy_error') is None) &
+                (form_data.get('other_medication_error') is None)):
             self.add_error('medication_error',
                            forms.ValidationError('Medication Error Not Selected', code='Empty Medication Error'))
 
