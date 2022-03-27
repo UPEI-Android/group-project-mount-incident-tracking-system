@@ -140,19 +140,19 @@ def sign_off_report(request, report_id):
       
 def csv_export(request):
     if request.POST:
-        #this_form = request.POST.form
-        response = HttpResponse(
-            content_type='text/csv',
-            headers={'Content-Disposition': 'attachment; filename="Reports.csv"'},
-        )
-        writer = csv.writer(response)
-        writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
-        #for key, value in this_form.cleaned_data.iteritems():
-            #writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
-        #if this_form.is_valid():
+        this_form = request.POST.form
+        if this_form.is_valid():
+            response = HttpResponse(
+                content_type='text/csv',
+                headers={'Content-Disposition': 'attachment; filename="Reports.csv"'},
+            )
+            writer = csv.writer(response)
+            #Headers incomplete
+            writer.writerow(['Community', 'Residents', 'Staff', 'Others', 'Writer', 'Location', 'Date', 'Fall Risk Assessment', 'Employee WCB Form', 'Employer WCB Form', 'Incident Type', 'Reason For Medication Error', 'Incident Description', 'Action Taken', 'Condition', 'Vitals: T', 'Vitals: P', 'Vitals: R', 'Vitals: BP', 'Vitals: SpO2', 'Vitals: Blood Sugar', 'Neurovitals: Pupil Size L', 'Neurovitals: Pupil Size R', 'Neurovitals: CS'])
+            #for key, value in this_form.cleaned_data.iteritems():
+                #writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
 
         return response
-    return redirect('form')
 
 
 
