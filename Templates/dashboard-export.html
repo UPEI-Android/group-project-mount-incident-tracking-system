@@ -36,13 +36,6 @@
     <div class="container" style="margin-bottom: 150px;">
     <form>
         <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
-            <div class="row d-flex justify-content-center">
-                <div class="col-12 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary" role="button" style="width: 80%;">&nbsp;<i class="fa fa-list-ul" style="font-size: 20px;"></i>&nbsp;Select</a></div>
-                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary" role="button" style="width: 80%;">&nbsp;<i class="fa fa-print" style="font-size: 20px;"></i>&nbsp;Print</a></div>
-                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary" role="button" type="submit" style="width: 80%;" href="{% url 'csv_export' %}">&nbsp;<i class="fa fa-download" style="font-size: 20px;"></i>&nbsp;Export</a></div>
-            </div>
-        </div>
-        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
             <div class="text-center"><a class="btn btn-secondary" data-bs-toggle="collapse" aria-expanded="true" aria-controls="collapse-2" href="#collapse-2" role="button" style="margin-bottom: 10px;width: 80%;font-size: 18px;"><i class="fa fa-filter"></i>&nbsp;Filters</a>
                 <div class="collapse show" id="collapse-2">
                     <form>
@@ -85,12 +78,19 @@
                 </div>
             </div>
         </div>
+        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
+            <div class="row d-flex justify-content-center">
+                <div class="col-12 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary" role="button" href="{% url 'dashboard' %}" style="width: 80%;">&nbsp;<i class="fa fa-list-ul" style="font-size: 20px;"></i>&nbsp;Select</a></div>
+                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary" role="button" style="width: 80%;">&nbsp;<i class="fa fa-print" style="font-size: 20px;"></i>&nbsp;Print</a></div>
+                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary" role="button" type="submit" style="width: 80%;" href="{% url 'csv_export' %}">&nbsp;<i class="fa fa-download" style="font-size: 20px;"></i>&nbsp;Export</a></div>
+            </div>
+        </div>
         {% for report in reports %}
 
             <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 0px;">
             <div class="row">
                 <div class="col-1">
-                    <input type="checkbox" style="width: 20px;height: 20px;" id = "{{ report.id }}">
+                    <input type="checkbox" style="width: 20px;height: 20px;" value = "{{ report.id }}">
                 </div>
                 <div class="col">
                     <div class="row">
