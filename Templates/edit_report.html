@@ -1,0 +1,329 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>The Mount Incident Tracking System</title>
+    <link rel="icon" type="image/png" sizes="5982x5064" href="{% static 'img/The-Mount-Main-Logo-JPG.png' %}">
+    <link rel="icon" type="image/png" sizes="5982x5064" href="{% static 'img/The-Mount-Main-Logo-JPG.png' %}">
+    <link rel="icon" type="image/png" sizes="5982x5064" href="{% static 'img/The-Mount-Main-Logo-JPG.png' %}">
+    <link rel="icon" type="image/png" sizes="5982x5064" href="{% static 'img/The-Mount-Main-Logo-JPG.png' %}">
+    <link rel="icon" type="image/png" sizes="5982x5064" href="{% static 'img/The-Mount-Main-Logo-JPG.png' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=ABeeZee&amp;display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+
+<body style="font-family: ABeeZee, sans-serif;font-size: 18px;">
+    <div style="box-shadow: 0px 0px 10px var(--bs-gray-500);padding-top: 15px;">
+        <p class="text-end" style="margin-bottom: 0px;margin-right: 35px;margin-left: 35px;"><i class="fa fa-user" style="font-size: 20px;"></i>&nbsp;{{ username }}</p>
+        <nav class="navbar navbar-light navbar-expand-md" style="padding: 15px;">
+            <div class="container-fluid"><a class="navbar-brand" href="#"><img src="{% static 'img/The-Mount-Main-Logo-JPG.png' %}" width="80"></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1" style="padding: 8px 12px;padding-right: 16px;padding-left: 16px;border-width: 2px;"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse text-end d-md-flex justify-content-md-end" id="navcol-1">
+                    <ul class="navbar-nav" style="font-size: 20px;">
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'form' %}">Reporting Form</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="container" style="margin-bottom: 50px; margin-top: 50px">
+        <div class="row d-flex justify-content-center justify-content-sm-center justify-content-xl-center">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} col-12 text-center">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="col">
+                <div>
+                    <form action="/edit_report/{{ report.id }}" method="POST">
+                        {% csrf_token %}
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
+                            <p>Individuals Involved:</p>
+                            <p>Resident(s):</p><textarea class="form-control" name="residents" placeholder="Residents">{{ report.residents }}</textarea>
+                            <div class="row">
+                                <div class="col-6 col-md-4 col-xl-2">
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-1" name="community" value="NCSD" {% if report.community == "NCSD" %} checked {% endif %}><label class="form-check-label" for="formCheck-1">Nursing Care SD</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-xl-2">
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-2" name="community" value="NCHT" {% if report.community == "NCHT" %} checked {% endif %}><label class="form-check-label" for="formCheck-2">Nursing Care HT</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-xl-2">
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-3" name="community" value="NCCH" {% if report.community == "NCCH" %} checked {% endif %}><label class="form-check-label" for="formCheck-3">Nursing Care CH</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-xl-2">
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-4" name="community" value="CCCC" {% if report.community == "CCCC" %} checked {% endif %}><label class="form-check-label" for="formCheck-4">Community Care</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-xl-2">
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-5" name="community" value="OTHR" {% if report.community == "OTHR" %} checked {% endif %}><label class="form-check-label" for="formCheck-5">Other (check one)</label></div>
+                                </div>
+                            </div>
+                            <p>Staff:</p><input class="form-control" type="text" placeholder="Staff" name="staff" value="{{ report.staff }}">
+                            <p>Other(s): (visitor, guest, etc.)</p><textarea class="form-control" name="others" placeholder="Others">{{ report.others }}</textarea>
+                            <p>Name of Writer:</p><input class="form-control" type="text" name="name_of_writer" placeholder="Name" value="{{ report.name_of_writer }}">
+                            <p>Date and Time of Incident:</p><input class="form-control" type="datetime-local" name="date_of_incident" value="{{ report.date_of_incident|date:"Y-m-d\TH:i" }}">
+                            <p>Incident Location:</p><input class="form-control" type="text" name="incident_location" placeholder="Location" value="{{ report.incident_location }}">
+                        </div>
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 20px;margin-top: 15px;margin-bottom: 15px;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <p>Type of Incident:</p>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-13" name="near_miss" value="true" {% if report.near_miss == True %} checked {% endif %}><label class="form-check-label" for="formCheck-13">Near Miss (1)</label></div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-20" name="fall" value="true" {% if report.fall == True %} checked {% endif %}><label class="form-check-label" for="formCheck-20">Fall (2)</label></div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-19" name="medication_error" value="true" {% if report.medication_error == True %} checked {% endif %}><label class="form-check-label" for="formCheck-19">Medication Error (3)</label></div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-18" name="treatment_error" value="true" {% if report.treatment_error == True %} checked {% endif %}><label class="form-check-label" for="formCheck-18">Treatment Error (4)</label></div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-17" name="loss_of_property" value="true" {% if report.loss_of_property == True %} checked {% endif %}><label class="form-check-label" for="formCheck-17">Loss of Property (5)</label></div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-16" name="death" value="true" {% if report.death == True %} checked {% endif %}><label class="form-check-label" for="formCheck-16">Death (6)</label></div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-15" name="other_type_of_incident" value="true" {% if report.other_type_of_incident == True %} checked {% endif %}><label class="form-check-label" for="formCheck-15">Other (7)</label></div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-14" name="staff_injury" value="true" {% if report.staff_injury == True %} checked {% endif %}><label class="form-check-label" for="formCheck-14">Staff Injury (8)</label></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 20px;margin-top: 15px;margin-bottom: 15px;">
+                            <div class="row" style="margin-top: 10px;">
+                                <div class="col-12">
+                                    <p>Fill out reason for medication error:</p>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-8" name="incorrect_resident" value="true" {% if report.incorrect_resident == True %} checked {% endif %}><label class="form-check-label" for="formCheck-8">Incorrect Resident</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-31" name="incorrect_route" value="true" {% if report.incorrect_route == True %} checked {% endif %}><label class="form-check-label" for="formCheck-31">Incorrect Route</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-30" name="incorrect_dose" value="true" {% if report.incorrect_dose == True %} checked {% endif %}><label class="form-check-label" for="formCheck-30">Incorrect Dose</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-29" name="incorrect_label" value="true" {% if report.incorrect_label == True %} checked {% endif %}><label class="form-check-label" for="formCheck-29">Incorrect Label</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-28" name="incorrect_name" value="true" {% if report.incorrect_name == True %} checked {% endif %}><label class="form-check-label" for="formCheck-28">Incorrect Name</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-27" name="drug_missing" value="true" {% if report.drug_missing == True %} checked {% endif %}><label class="form-check-label" for="formCheck-27">Drug Missing</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-26" name="incorrect_time" value="true" {% if report.incorrect_time == True %} checked {% endif %}><label class="form-check-label" for="formCheck-26">Incorrect Time</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-25" name="extra_dose_given" value="true" {% if report.extra_dose_given == True %} checked {% endif %}><label class="form-check-label" for="formCheck-25">Extra Dose Given</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-24" name="incorrect_drug" value="true" {% if report.incorrect_drug == True %} checked {% endif %}><label class="form-check-label" for="formCheck-24">Incorrect Drug</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-23" name="dose_omitted" value="true" {% if report.dose_omitted == True %} checked {% endif %}><label class="form-check-label" for="formCheck-23">Dose Omitted</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-22" name="pharmacy_error" value="true" {% if report.pharmacy_error == True %} checked {% endif %}><label class="form-check-label" for="formCheck-22">Pharmacy Error</label></div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-3" style="padding: 5px;padding-right: 12px;padding-left: 12px;">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-21" name="other_medication_error" value="true" {% if report.other_medication_error == True %} checked {% endif %}><label class="form-check-label" for="formCheck-21">Other</label></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 20px;margin-top: 15px;margin-bottom: 15px;">
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col-8 col-md-4 col-xl-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-6" name="fall_risk_assessment" value="True" {% if report.fall_risk_assessment == True %} checked {% endif %}><label class="form-check-label" for="formCheck-6">Falls Risk Assessment Done?</label></div>
+                                </div>
+                                <div class="col-8 col-md-4 col-xl-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-9" name="employee_wcb_form" value="True" {% if report.employee_wcb_form == True %} checked {% endif %}><label class="form-check-label" for="formCheck-9">Employee WCB Form 6 done within 6 months?</label></div>
+                                </div>
+                                <div class="col-8 col-md-4 col-xl-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-11" name="employer_wcb_form" value="True" {% if report.employer_wcb_form == True %} checked {% endif %}><label class="form-check-label" for="formCheck-11">Employer WCB form 7 done within 3 days? (Can be done online or paper)</label></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
+                            <p>Describe the Incident:</p><textarea class="form-control form-control-lg" name="incident_description">{{ report.incident_description }}</textarea>
+                            <p>Action Taken</p><textarea class="form-control form-control-lg" name="action_taken">{{ report.action_taken }}</textarea>
+                        </div>
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <p>Resident/Staff/Visitor Condition as time of incident:</p>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-32" name="condition" value="N" {% if report.condition == "N" %} checked {% endif %}><label class="form-check-label" for="formCheck-32">Normal</label></div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-36" name="condition" value="U" {% if report.condition == "U" %} checked {% endif %}><label class="form-check-label" for="formCheck-36">Unconscious</label></div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-35" name="condition" value="S" {% if report.condition == "S" %} checked {% endif %}><label class="form-check-label" for="formCheck-35">Sedated</label></div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-34" name="condition" value="D" {% if report.condition == "D" %} checked {% endif %}><label class="form-check-label" for="formCheck-34">Disoriented</label></div>
+                                </div>
+                                <div class="col-12 col-lg-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" id="formCheck-33" name="condition" value="O" {% if report.condition == "O" %} checked {% endif %}><label class="form-check-label" for="formCheck-33">Other (Specify):</label></div>
+                                </div>
+                                <div class="col-12"><textarea class="form-control" name="condition_other_description">{{ report.condition_other_description }}</textarea></div>
+                                <div class="col-12">
+                                    <p>Vital Signs:</p>
+                                </div>
+                                <div class="col-4 col-sm-2">
+                                    <p class="text-end">T</p>
+                                </div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="T" value="{{ report.T }}"></div>
+                                <div class="col-4 col-sm-2">
+                                    <p class="text-end">P</p>
+                                </div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="P" value="{{ report.P }}"></div>
+                                <div class="col-4 col-sm-2">
+                                    <p class="text-end">R</p>
+                                </div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="R" value="{{ report.R }}"></div>
+                                <div class="col-4 col-sm-2">
+                                    <p class="text-end">BP</p>
+                                </div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="BP" value="{{ report.BP }}"></div>
+                                <div class="col-4 col-sm-2">
+                                    <p class="text-end">Sp02</p>
+                                </div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="SpO2" value="{{ report.SpO2 }}"></div>
+                                <div class="col-4 col-sm-2">
+                                    <p class="text-end">Blood Sugar</p>
+                                </div>
+                                <div class="col-8 col-sm-4"><input class="form-control" type="number" name="blood_sugar" value="{{ report.blood_sugar }}"></div>
+                                <div class="col-12">
+                                    <p>Neurovital Signs:</p>
+                                </div>
+                                <div class="col-4 col-lg-2">
+                                    <p class="text-end">Pupil Size L</p>
+                                </div>
+                                <div class="col-8 col-lg-2"><input class="form-control" type="number" name="pupil_size_L" value="{{ report.pupil_size_L }}"></div>
+                                <div class="col-4 col-lg-2">
+                                    <p class="text-end">Pupil Size R</p>
+                                </div>
+                                <div class="col-8 col-lg-2"><input class="form-control" type="number" name="pupil_size_R" value="{{ report.pupil_size_R }}"></div>
+                                <div class="col-4 col-lg-2">
+                                    <p class="text-end">CS</p>
+                                </div>
+                                <div class="col-8 col-lg-2"><input class="form-control" type="number" name="CS"  value="{{ report.CS }}"></div>
+                                <div class="col-12">
+                                    <p class="text-start">(Complete NVS Record)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <p class="text-center" style="font-weight: bold;text-decoration: underline;font-size: 24px;">MUST BE FILLED OUT</p>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-37" name="family_notified" value="True" {% if report.family_notified == True %} checked {% endif %}><label class="form-check-label" for="formCheck-37">Family Notified</label></div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-8">
+                                    <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="family_name" value="{{ report.family_name }}">
+                                    <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="family_notification_date" value="{{ report.family_notification_date|date:"Y-m-d\TH:i" }}">
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-41" name="physician_notified" value="True" {% if report.physician_notified == True %} checked {% endif %}><label class="form-check-label" for="formCheck-41">Physician Notified</label></div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-8">
+                                    <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="physician_name" value="{{ report.physician_name }}">
+                                    <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="physician_notification_date"  value="{{ report.physician_notification_date|date:"Y-m-d\TH:i" }}">
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-39" name="supervisor_notified" value="True" {% if report.supervisor_notified == True %} checked {% endif %}><label class="form-check-label" for="formCheck-39">Supervisor Notified</label></div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-8">
+                                    <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="supervisor_name" value="{{ report.supervisor_name }}">
+                                    <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="supervisor_notification_date" value="{{ report.supervisor_notification_date|date:"Y-m-d\TH:i" }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <p>Action or Treatment prescribed by the physician/supervisor:</p>
+                                </div>
+                                <div class="col-12"><textarea class="form-control" name="action_treatment_prescribed">{{ report.action_treatment_prescribed }}</textarea></div>
+                                <div class="col-12">
+                                    <p>What was the cause of the incident?</p>
+                                </div>
+                                <div class="col-12"><textarea class="form-control" name="cause_of_incident">{{ report.cause_of_incident }}</textarea></div>
+                                <div class="col-12">
+                                    <p>What would prevent similar incidents?</p>
+                                </div>
+                                <div class="col-12"><textarea class="form-control" name="prevention_of_incident">{{ report.prevention_of_incident }}</textarea></div>
+                            </div>
+                        </div>
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
+                            <div class="row">
+                                <div class="col-12 col-md-4 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-43" name="incident_documented_on_chart" value="True" {% if report.incident_documented_on_chart == True %} checked {% endif %}><label class="form-check-label" for="formCheck-43">Incident Documented on Chart</label></div>
+                                </div>
+                                <div class="col-12 col-md-4 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-47" name="post_incident_huddle_held" value="True" {% if report.post_incident_huddle_held == True %} checked {% endif %}><label class="form-check-label" for="formCheck-47">Post Incident Huddle Held</label></div>
+                                </div>
+                                <div class="col-12 col-md-4 col-lg-4">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-45" name="post_incident_huddle_charted" value="True" {% if report.post_incident_huddle_charted == True %} checked {% endif %}><label class="form-check-label" for="formCheck-45">Post Incident Huddle Documented on Chart</label></div>
+                                </div>
+                                <div class="col-12">
+                                    <p style="color: var(--bs-red);font-style: italic;text-decoration:  underline;">SIGNATURES HERE (FORMAT/PROTOCOL TO BE DETERMINED)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <p>Notes for follow-up reccomendations:</p>
+                                </div>
+                                <div class="col-12"><textarea class="form-control" rows="8" name="follow_up_notes">{{ report.follow_up_notes }}</textarea></div>
+                            </div>
+                        </div>
+                        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
+                            <div class="col">
+                                <p style="color: var(--bs-red);font-style: italic;text-decoration:  underline;">SIGNATURES HERE (FORMAT/PROTOCOL TO BE DETERMINED)</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <p>Physician Comments:</p>
+                                </div>
+                                <div class="col-12"><textarea class="form-control form-control-lg" name="physician_comments">{{ report.physician_comments }}</textarea></div>
+                            </div>
+                            <div class="row" style="margin-top: 20px">
+                                <div class="col-6">
+                                  <button class="btn btn-primary btn-lg" role="button" style="font-family: ABeeZee, sans-serif;" type="submit" name="submit" value="submit">Submit</button>
+                                </div>
+                                <div class="col-6">
+                                  <button class="btn btn-primary btn-lg" role="button" style="font-family: ABeeZee, sans-serif;" type="submit" name="submit" value="save">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
