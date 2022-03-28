@@ -132,9 +132,10 @@ def dashboard_export(request):
     if request.user.is_authenticated:
         reports = Report.objects.all()
 
-        return render(request, "dashboard-export.html", {"username": request.user.username, "reports": reports, "count": reports.count()})
-      
-      
+        return render(request, "dashboard-export.html",
+                      {"username": request.user.username, "reports": reports, "count": reports.count()})
+
+
 def mark_report_complete(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
@@ -161,25 +162,36 @@ def sign_off_report(request, report_id):
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
-      
-      
+
+
 def csv_export(request):
     if request.method == "GET":
         count = int(request.GET.get("report_count"))
         response = HttpResponse(
-                content_type='text/csv',
-                headers={'Content-Disposition': 'attachment; filename="Reports.csv"'},
+            content_type='text/csv',
+            headers={'Content-Disposition': 'attachment; filename="Reports.csv"'},
         )
         writer = csv.writer(response)
-        writer.writerow(['Community', 'Residents', 'Staff', 'Others', 'Writer', 'Location', 'Date', 'Fall Risk Assessment', 'Employee WCB Form', 'Employer WCB Form', 'Incident Type', 'Reason For Medication Error', 'Incident Description', 'Action Taken', 'Condition', 'Vitals: T', 'Vitals: P', 'Vitals: R', 'Vitals: BP', 'Vitals: SpO2', 'Vitals: Blood Sugar', 'Neurovitals: Pupil Size L', 'Neurovitals: Pupil Size R', 'Neurovitals: CS', 'Family Notified', 'Family Member Name', 'Family Notification Date', 'Physician Notified', 'Physician Name', 'Physician Notification Date', 'Supervisor Notified', 'Supervisor Name', 'Supervisor Notification Date', 'Action Treatment Prescribed', 'Cause of Incident', 'Prevention Plan of Incident', 'Incident Documented on Chart', 'Post Incident Huddle Held', 'Post Incident Huddle Charted', 'Follow Up Notes', 'Physician Comments', 'Report Submission Date', 'Reporter Account', 'Completion Account', 'Physician Account', 'Report Status'])
-
+        writer.writerow(
+            ['Community', 'Residents', 'Staff', 'Others', 'Writer', 'Location', 'Date', 'Fall Risk Assessment',
+             'Employee WCB Form', 'Employer WCB Form', 'Incident Type', 'Reason For Medication Error',
+             'Incident Description', 'Action Taken', 'Condition', 'Vitals: T', 'Vitals: P', 'Vitals: R', 'Vitals: BP',
+             'Vitals: SpO2', 'Vitals: Blood Sugar', 'Neurovitals: Pupil Size L', 'Neurovitals: Pupil Size R',
+             'Neurovitals: CS', 'Family Notified', 'Family Member Name', 'Family Notification Date',
+             'Physician Notified', 'Physician Name', 'Physician Notification Date', 'Supervisor Notified',
+             'Supervisor Name', 'Supervisor Notification Date', 'Action Treatment Prescribed', 'Cause of Incident',
+             'Prevention Plan of Incident', 'Incident Documented on Chart', 'Post Incident Huddle Held',
+             'Post Incident Huddle Charted', 'Follow Up Notes', 'Physician Comments', 'Report Submission Date',
+             'Reporter Account', 'Completion Account', 'Physician Account', 'Report Status'])
 
         for i in range(count):
+            print("I Value: " + str(i))
             report_id = request.GET.get("reportID" + str(i))
-            #report_id = int(report_id)
+            # report_id = int(report_id)
             print("reportID:" + str(report_id) + " Count: " + str(count))
-            if(report_id != None):
+            if (report_id != None):
                 report = Report.objects.filter(id=report_id)[0]
+                print("Report Loaded From DataBase: " + str(report.id))
                 medication_error_reason = ""
                 if (report.medication_error):
                     if (report.incorrect_resident):
@@ -240,10 +252,10 @@ def csv_export(request):
                      report.reporter_account,
                      report.completing_account, report.physician_review_account, report.report_status])
 
-            #for key, value in this_form.cleaned_data.iteritems():
-                #writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+            # for key, value in this_form.cleaned_data.iteritems():
+            # writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
 
-            return response
+        return response
 
 
 def dashboard(request):
