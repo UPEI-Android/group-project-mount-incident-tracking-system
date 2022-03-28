@@ -158,7 +158,7 @@ def sign_off_report(request, report_id):
         else:
             messages.error(request, f'Cannot sign off on report')
             return redirect('read_report', report_id=report_id)
-      else:
+    else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
       
