@@ -53,8 +53,6 @@ def form(request):
                     return render(request, 'input_form.html', {"username": request.user.username})
                 else:
                     # Displays an error message to the user and redirects them to the form page.
-                    for error in report.errors:
-                        print(error)
                     messages.add_message(request, messages.WARNING, 'Error in Form')
                     return render(request, 'input_form.html', {"username": request.user.username, "report": report})
             elif request.POST['submit'] == "save":
@@ -70,8 +68,6 @@ def form(request):
                     messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Submitted')
                     return render(request, 'input_form.html', {"username": request.user.username})
                 else:
-                    for error in report.errors:
-                        print(error)
                     messages.add_message(request, messages.WARNING, 'Error in Form')
                     return render(request, 'input_form.html', {"username": request.user.username})
 
@@ -93,9 +89,37 @@ def read_report(request, report_id):
 def edit_report(request, report_id):
     if request.user.is_authenticated:
         if request.method == "POST":
-            # TODO: Add functionality to save submitted and unfinished reports
-            report = Report.objects.filter(id=report_id)[0]
-            return render(request, "edit_report.html", {"report": report})
+            report_instance = Report.objects.get(id=report_id)
+            report = ReportForm(request.POST, instance=report_instance)
+            if request.POST['submit'] == 'submit':
+                report.full_clean()
+                report.validate()
+                if report.is_valid():
+                    # Create an instance of the database object to add the report status to
+
+                    report_data = report.save(commit=False)
+                    # Check if the resident is in a Nursing Care community to indicate that a Physician must review the report
+                    if 'NC' in report_data.community:
+                        report_data.report_status = 'PP'
+                    else:
+                        report_data.report_status = 'SU'
+                    # Adds the reporting accounts username to the data and saves the data to the database
+                    report_data.save()
+                    messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Submitted')
+                    return redirect('read_report', report_id=report_id)
+                else:
+                    messages.add_message(request, messages.WARNING, 'Error in Form')
+                    return render(request, 'input_form.html', {"username": request.user.username, "report": report})
+            elif request.POST['submit'] == "save":
+                if report.is_valid():
+                    report_data = report.save(commit=False)
+                    report_data.report_status = 'PC'
+                    report_data.save()
+                    messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Saved')
+                    return redirect('read_report', report_id=report_id)
+                else:
+                    messages.add_message(request, messages.WARNING, 'Error in Form')
+                    return render(request, 'input_form.html', {"username": request.user.username, "report": report})
         else:
             report = Report.objects.filter(id=report_id)[0]
             return render(request, "edit_report.html", {"username": request.user.username, "report": report})
@@ -125,7 +149,7 @@ def mark_report_complete(request, report_id):
 
 
 def sign_off_report(request, report_id):
-      if request.user.is_authenticated:
+    if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
         if report.report_status == "PP":
             report.report_status = "SU"
@@ -151,8 +175,7 @@ def csv_export(request):
             for key, value in this_form.cleaned_data.iteritems():
                 writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
 
-        return response
-
+            return response
 
 
 def dashboard(request):

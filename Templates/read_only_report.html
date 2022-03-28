@@ -18,6 +18,20 @@
 </head>
 
 <body style="font-family: ABeeZee, sans-serif;font-size: 18px;">
+    <div style="box-shadow: 0px 0px 10px var(--bs-gray-500);padding-top: 15px;">
+        <p class="text-end" style="margin-bottom: 0px;margin-right: 35px;margin-left: 35px;"><i class="fa fa-user" style="font-size: 20px;"></i>&nbsp;{{ username }}</p>
+        <nav class="navbar navbar-light navbar-expand-md" style="padding: 15px;">
+            <div class="container-fluid"><a class="navbar-brand" href="#"><img src="{% static 'img/The-Mount-Main-Logo-JPG.png' %}" width="80"></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1" style="padding: 8px 12px;padding-right: 16px;padding-left: 16px;border-width: 2px;"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse text-end d-md-flex justify-content-md-end" id="navcol-1">
+                    <ul class="navbar-nav" style="font-size: 20px;">
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'form' %}">Reporting Form</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
     <div class="container" style="margin-bottom: 50px;">
         <div class="row d-flex justify-content-center justify-content-sm-center justify-content-xl-center">
             {% if messages %}
@@ -63,7 +77,7 @@
                         <p>Staff:</p><input class="form-control" type="text" placeholder="Staff" name="staff" value="{{ report.staff }}" disabled>
                         <p>Other(s): (visitor, guest, etc.)</p><textarea class="form-control" name="others" placeholder="Others" disabled>{{ report.others }}</textarea>
                         <p>Name of Writer:</p><input class="form-control" type="text" name="name_of_writer" placeholder="Name" value="{{ report.name_of_writer }}" disabled>
-                        <p>Date and Time of Incident:</p><input class="form-control" type="datetime-local" name="date_of_incident" value="{{ report.date_of_incident }}" disabled>
+                        <p>Date and Time of Incident:</p><input class="form-control" type="datetime-local" name="date_of_incident" value="{{ report.date_of_incident|date:"Y-m-d\TH:i" }}" disabled>
                         <p>Incident Location:</p><input class="form-control" type="text" name="incident_location" placeholder="Location" value="{{ report.incident_location }}" disabled>
                     </div>
                     <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 20px;margin-top: 15px;margin-bottom: 15px;">
@@ -235,21 +249,21 @@
                             </div>
                             <div class="col-12 col-md-6 col-lg-8">
                                 <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="family_name" value="{{ report.family_name }}" disabled>
-                                <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="family_notification_date" value="{{ report.family_notification_date }}" disabled>
+                                <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="family_notification_date" value="{{ report.family_notification_date|date:"Y-m-d\TH:i" }}" disabled>
                             </div>
                             <div class="col-12 col-md-6 col-lg-4">
                                 <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-41" name="physician_notified" value="True" {% if report.physician_notified == True %} checked {% endif %} disabled><label class="form-check-label" for="formCheck-41">Physician Notified</label></div>
                             </div>
                             <div class="col-12 col-md-6 col-lg-8">
                                 <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="physician_name" value="{{ report.physician_name }}" disabled>
-                                <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="physician_notification_date"  value="{{ report.physician_notification_date }}" disabled>
+                                <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="physician_notification_date"  value="{{ report.physician_notification_date|date:"Y-m-d\TH:i" }}" disabled>
                             </div>
                             <div class="col-12 col-md-6 col-lg-4">
                                 <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-39" name="supervisor_notified" value="True" {% if report.supervisor_notified == True %} checked {% endif %} disabled><label class="form-check-label" for="formCheck-39">Supervisor Notified</label></div>
                             </div>
                             <div class="col-12 col-md-6 col-lg-8">
                                 <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="supervisor_name" value="{{ report.supervisor_name }}" disabled>
-                                <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="supervisor_notification_date" value="{{ report.supervisor_notification_date }}" disabled>
+                                <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="supervisor_notification_date" value="{{ report.supervisor_notification_date|date:"Y-m-d\TH:i" }}" disabled>
                             </div>
                         </div>
                     </div>
@@ -258,15 +272,15 @@
                             <div class="col-12">
                                 <p>Action or Treatment prescribed by the physician/supervisor:</p>
                             </div>
-                            <div class="col-12"><textarea class="form-control" name="action_treatment_prescribed" disabled>{{ action_treatment_prescribed }}</textarea></div>
+                            <div class="col-12"><textarea class="form-control" name="action_treatment_prescribed" disabled>{{ report.action_treatment_prescribed }}</textarea></div>
                             <div class="col-12">
                                 <p>What was the cause of the incident?</p>
                             </div>
-                            <div class="col-12"><textarea class="form-control" name="cause_of_incident" disabled>{{ cause_of_incident }}</textarea></div>
+                            <div class="col-12"><textarea class="form-control" name="cause_of_incident" disabled>{{ report.cause_of_incident }}</textarea></div>
                             <div class="col-12">
                                 <p>What would prevent similar incidents?</p>
                             </div>
-                            <div class="col-12"><textarea class="form-control" name="prevention_of_incident" disabled>{{ prevention_of_incident }}</textarea></div>
+                            <div class="col-12"><textarea class="form-control" name="prevention_of_incident" disabled>{{ report.prevention_of_incident }}</textarea></div>
                         </div>
                     </div>
                     <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
