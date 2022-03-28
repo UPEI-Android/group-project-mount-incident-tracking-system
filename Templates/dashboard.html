@@ -1,4 +1,5 @@
 {% load static %}
+{% load tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,14 +35,7 @@
         </nav>
     </div>
     <div class="container" style="margin-bottom: 150px;">
-        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
-            <div class="row d-flex justify-content-center">
-                <div class="col-12 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary" role="button" href="{% url 'dashboard_export' %}" style="width: 80%;">&nbsp;<i class="fa fa-list-ul" style="font-size: 20px;"></i>&nbsp;Select</a></div>
-                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary disabled" role="button" style="width: 80%;">&nbsp;<i class="fa fa-print" style="font-size: 20px;"></i>&nbsp;Print</a></div>
-                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary disabled" role="button" style="width: 80%;">&nbsp;<i class="fa fa-download" style="font-size: 20px;"></i>&nbsp;Export</a></div>
-            </div>
-        </div>
-        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
+    <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
             <div class="text-center"><a class="btn btn-secondary" data-bs-toggle="collapse" aria-expanded="true" aria-controls="collapse-2" href="#collapse-2" role="button" style="margin-bottom: 10px;width: 80%;font-size: 18px;"><i class="fa fa-filter"></i>&nbsp;Filters</a>
                 <div class="collapse show" id="collapse-2">
                     <form>
@@ -59,21 +53,21 @@
                             <div class="col-6 col-sm-4 col-xl-2" style="padding: 0px;padding-right: 10px;padding-left: 10px;padding-top: 5px;padding-bottom: 5px;">
                                 <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Location</button>
                                     <div class="dropdown-menu">
-                                        <div class="form-check" style="margin-left: 10px;"><input class="form-check-input" type="checkbox" id="formCheck-8"><label class="form-check-label" for="formCheck-8">Main Floor</label></div>
+                                    {{ reports|location_options }}
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6 col-sm-4 col-xl-2" style="padding: 0px;padding-right: 10px;padding-left: 10px;padding-top: 5px;padding-bottom: 5px;">
                                 <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Type of Care</button>
                                     <div class="dropdown-menu">
-                                        <div class="form-check" style="margin-left: 10px;"><input class="form-check-input" type="checkbox" id="formCheck-9"><label class="form-check-label" for="formCheck-9">Nursing</label></div>
+                                        {{ reports|care_options }}
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6 col-sm-4 col-xl-2" style="padding: 0px;padding-right: 10px;padding-left: 10px;padding-top: 5px;padding-bottom: 5px;">
                                 <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Incident Type</button>
                                     <div class="dropdown-menu">
-                                        <div class="form-check" style="margin-left: 10px;"><input class="form-check-input" type="checkbox" id="formCheck-10"><label class="form-check-label" for="formCheck-10">John Smith</label></div>
+                                        {{ reports|incident_options }}
                                     </div>
                                 </div>
                             </div>
@@ -81,6 +75,13 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
+            <div class="row d-flex justify-content-center">
+                <div class="col-12 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary" role="button" href="{% url 'dashboard_export' %}" style="width: 80%;">&nbsp;<i class="fa fa-list-ul" style="font-size: 20px;"></i>&nbsp;Select</a></div>
+                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary disabled" role="button" style="width: 80%;">&nbsp;<i class="fa fa-print" style="font-size: 20px;"></i>&nbsp;Print</a></div>
+                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary disabled" role="button" style="width: 80%;">&nbsp;<i class="fa fa-download" style="font-size: 20px;"></i>&nbsp;Export</a></div>
             </div>
         </div>
         {% for report in reports %}
