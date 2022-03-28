@@ -32,7 +32,7 @@
             </div>
         </nav>
     </div>
-    <div class="container" style="margin-bottom: 50px;">
+    <div class="container" style="margin-bottom: 50px; margin-top: 50px">
         <div class="row d-flex justify-content-center justify-content-sm-center justify-content-xl-center">
             {% if messages %}
                 {% for message in messages %}
@@ -41,17 +41,6 @@
                     </div>
                 {% endfor %}
             {% endif %}
-            <div class="col-12" style="margin-bottom: 40px;">
-                <div style="text-align: center;margin-top: 25px;"><img src="{% static 'img/The-Mount-Main-Logo-JPG.png' %}" width="100">
-                    <p style="font-family: ABeeZee, sans-serif;font-size: 35px;"> The Mount Continuing Care<br>Incident Reporting Form</p>
-                </div>
-                <p class="text-center">You are logged in as:&nbsp; {{ username }}</p>
-                <ul class="nav nav-tabs d-flex justify-content-center">
-                    <li class="nav-item"><a class="nav-link active" href="#">Reporting Form</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Page 1</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Page 2</a></li>
-                </ul>
-            </div>
             <div class="col">
                 <div>
                     <form action="/edit_report/{{ report.id }}" method="POST">
