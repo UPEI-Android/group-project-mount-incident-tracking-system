@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from app.models import Report
 from app.forms import ReportForm
+from .decorators import allowed_users
 
 
 # Create your views here.
@@ -79,6 +80,7 @@ def form(request):
         return redirect('home')
 
 
+@allowed_users(allowed_roles=['admin'])
 def read_report(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
@@ -88,6 +90,7 @@ def read_report(request, report_id):
         return redirect('home')
 
 
+@allowed_users(allowed_roles=['admin'])
 def edit_report(request, report_id):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -102,6 +105,7 @@ def edit_report(request, report_id):
         return redirect('home')
 
 
+@allowed_users(allowed_roles=['admin'])
 def mark_report_complete(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
@@ -116,6 +120,7 @@ def mark_report_complete(request, report_id):
         return redirect('home')
 
 
+@allowed_users(allowed_roles=['physician'])
 def sign_off_report(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]

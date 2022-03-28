@@ -5,212 +5,31 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>The Mount Incident Tracking System</title>
-    <link rel="icon" type="image/png" sizes="5982x5064" href="{% static 'img/The-Mount-Main-Logo-JPG.png' %}">
-    <link rel="icon" type="image/png" sizes="5982x5064" href="{% static 'img/The-Mount-Main-Logo-JPG.png' %}">
-    <link rel="icon" type="image/png" sizes="5982x5064" href="{% static 'img/The-Mount-Main-Logo-JPG.png' %}">
-    <link rel="icon" type="image/png" sizes="5982x5064" href="{% static 'img/The-Mount-Main-Logo-JPG.png' %}">
-    <link rel="icon" type="image/png" sizes="5982x5064" href="{% static 'img/The-Mount-Main-Logo-JPG.png' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=ABeeZee&amp;display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <title>The Mount</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css?family=ABeeZee&amp;display=swap' %}">
+    <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css?family=Abel&amp;display=swap' %}">
+    <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css?family=Lato&amp;display=swap' %}">
+    <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css?family=Noto+Sans+JP&amp;display=swap' %}">
+    <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css?family=Noto+Sans+KR&amp;display=swap' %}">
+    <link rel="stylesheet" href="{% static 'fonts/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fonts/simple-line-icons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 
 <body style="font-family: ABeeZee, sans-serif;">
-    <div style="box-shadow: 0px 0px 10px var(--bs-gray-500);padding-top: 15px;">
-        <p class="text-end" style="margin-bottom: 0px;margin-right: 35px;margin-left: 35px;"><i class="fa fa-user" style="font-size: 20px;"></i>&nbsp;{{ username }}</p>
-        <nav class="navbar navbar-light navbar-expand-md" style="padding: 15px;">
-            <div class="container-fluid"><a class="navbar-brand" href="#"><img src="{% static 'img/The-Mount-Main-Logo-JPG.png' %}" width="80"></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1" style="padding: 8px 12px;padding-right: 16px;padding-left: 16px;border-width: 2px;"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-                <div class="collapse navbar-collapse text-end d-md-flex justify-content-md-end" id="navcol-1">
-                    <ul class="navbar-nav" style="font-size: 20px;">
-                        <li class="nav-item"><a class="nav-link" href="{% url 'form' %}">Reporting Form</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="{% url 'dashboard' %}">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </div>
-    <div class="container" style="margin-bottom: 150px;">
-        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
-            <div class="row d-flex justify-content-center">
-                <div class="col-12 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary" role="button" style="width: 80%;">&nbsp;<i class="fa fa-list-ul" style="font-size: 20px;"></i>&nbsp;Select</a></div>
-                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary disabled" role="button" style="width: 80%;">&nbsp;<i class="fa fa-print" style="font-size: 20px;"></i>&nbsp;Print</a></div>
-                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary disabled" role="button" style="width: 80%;">&nbsp;<i class="fa fa-download" style="font-size: 20px;"></i>&nbsp;Export</a></div>
+    <nav class="navbar navbar-light navbar-expand-md" style="box-shadow: 0px 0px 10px var(--bs-gray-500);padding: 15px;">
+        <div class="container-fluid"><a class="navbar-brand" href="#"><img src="{% static 'img/The-Mount-Main-Logo-JPG.png' %}" width="80"></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1" style="padding: 8px 12px;padding-right: 16px;padding-left: 16px;border-width: 2px;"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse text-end d-md-flex justify-content-md-end" id="navcol-1">
+                <ul class="navbar-nav" style="font-size: 20px;">
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'form' %}">Reporting Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Reports</a></li>
+                </ul>
             </div>
         </div>
-        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
-            <div class="text-center"><a class="btn btn-secondary" data-bs-toggle="collapse" aria-expanded="true" aria-controls="collapse-2" href="#collapse-2" role="button" style="margin-bottom: 10px;width: 80%;font-size: 18px;"><i class="fa fa-filter"></i>&nbsp;Filters</a>
-                <div class="collapse show" id="collapse-2">
-                    <form>
-                        <div class="row" style="margin-top: 10px;">
-                            <div class="col-6 col-sm-4 col-xl-2" style="padding: 0px;padding-right: 10px;padding-left: 10px;padding-top: 5px;padding-bottom: 5px;"><input class="form-control" type="text" name="Residents Name" placeholder="Residents" style="border: 2px solid var(--bs-dark);text-align: center;font-size: 18px;color: #000000;"></div>
-                            <div class="col-6 col-sm-4 col-xl-2" style="padding: 0px;padding-right: 10px;padding-left: 10px;padding-top: 5px;padding-bottom: 5px;">
-                                <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Date</button>
-                                    <div class="dropdown-menu">
-                                        <p style="margin-left: 15px;margin-right: 15px;margin-bottom: 0px;">From:</p><input class="form-control" type="date" style="margin-left: 10px;margin-right: 10px;width: 90%;">
-                                        <p style="margin-left: 15px;margin-right: 15px;margin-bottom: 0px;">To:</p><input class="form-control" type="date" style="margin-left: 10px;margin-right: 10px;width: 90%;">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-sm-4 col-xl-2" style="padding: 0px;padding-right: 10px;padding-left: 10px;padding-top: 5px;padding-bottom: 5px;"><input class="form-control" type="text" name="Residents Name" placeholder="Reporter" style="border: 2px solid var(--bs-dark);text-align: center;font-size: 18px;color: #000000;"></div>
-                            <div class="col-6 col-sm-4 col-xl-2" style="padding: 0px;padding-right: 10px;padding-left: 10px;padding-top: 5px;padding-bottom: 5px;">
-                                <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Location</button>
-                                    <div class="dropdown-menu">
-                                        <div class="form-check" style="margin-left: 10px;"><input class="form-check-input" type="checkbox" id="formCheck-8"><label class="form-check-label" for="formCheck-8">Main Floor</label></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-sm-4 col-xl-2" style="padding: 0px;padding-right: 10px;padding-left: 10px;padding-top: 5px;padding-bottom: 5px;">
-                                <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Type of Care</button>
-                                    <div class="dropdown-menu">
-                                        <div class="form-check" style="margin-left: 10px;"><input class="form-check-input" type="checkbox" id="formCheck-9"><label class="form-check-label" for="formCheck-9">Nursing</label></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-sm-4 col-xl-2" style="padding: 0px;padding-right: 10px;padding-left: 10px;padding-top: 5px;padding-bottom: 5px;">
-                                <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Incident Type</button>
-                                    <div class="dropdown-menu">
-                                        <div class="form-check" style="margin-left: 10px;"><input class="form-check-input" type="checkbox" id="formCheck-10"><label class="form-check-label" for="formCheck-10">John Smith</label></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col" style="padding: 0px;padding-right: 10px;padding-left: 10px;padding-top: 15px;padding-bottom: 0px;"><a class="btn btn-secondary" role="button" style="width: 50% ;">Apply</a></div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        {% for report in reports %}
-            <a style="text-decoration-line: none" href="/read_report/{{ report.id }}">
-            <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 0px;">
-                <div class="row">
-                    <div class="col-4" style="font-size: 18px;font-weight: bold;">
-                        <p>
-                            {% if report.residents != "" %}Residents Name: {{ report.residents }} <br/>{% endif %}
-                            {% if report.staff != "" %} Staff Name: {{ report.staff }} <br/>{% endif %}
-                            {% if report.others != "" %} Others Name: {{ report.others }} <br/>{% endif %}
-                        </p>
-                    </div>
-                    <div class="col-8" style="font-size: 18px;font-weight: bold;">
-                        <p>{{ report.date_of_incident }}</p>
-                    </div>
-                    <div class="col-4">
-                        <p>Reporter Name: {{ report.name_of_writer }}</p>
-                    </div>
-                    <div class="col-8">
-                        <p>Location: {{ report.incident_location }}</p>
-                    </div>
-                    <div class="col-4">
-                        <p>Community: {{ report.community }}</p>
-                    </div>
-                    <div class="col-8">
-                        <p>Incident Type:
-                            {% if report.near_miss %}Near Miss, {% endif %}
-                            {% if report.fall %}Fall, {% endif %}
-                            {% if report.medication_error %}Medication Error (
-                                {% if report.incorrect_resident %}Incorrect Resident, {% endif %}
-                                {% if report.incorrect_route %}Incorrect Route, {% endif %}
-                                {% if report.incorrect_dose %}Incorrect Dose, {% endif %}
-                                {% if report.incorrect_label %}Incorrect Label, {% endif %}
-                                {% if report.incorrect_name %}Incorrect Name, {% endif %}
-                                {% if report.incorrect_time %}Incorrect Time, {% endif %}
-                                {% if report.incorrect_drug %}Incorrect Drug, {% endif %}
-                                {% if report.drug_missing %}Drug Missing, {% endif %}
-                                {% if report.extra_dose_given %}Extra Dose Given, {% endif %}
-                                {% if report.dose_omitted %}Dose Omitted, {% endif %}
-                                {% if report.pharmacy_error %}Pharmacy Error, {% endif %}
-                                {% if report.other_medication_error %}Other{% endif %}
-                                ), {% endif %}
-                            {% if report.treatment_error %}Treatment Error, {% endif %}
-                            {% if report.loss_of_property %}Loss of Property, {% endif %}
-                            {% if report.death %}Death, {% endif %}
-                            {% if report.other_type_of_incicent %}Other, {% endif %}
-                            {% if report.staff_injury %}Staff Injury{% endif %}</p>
-                    </div>
-                </div>
-            </div>
-        </a>
-        {% endfor %}
-
-        <a href="read-only-report.html">
-            <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 0px;">
-                <div class="row">
-                    <div class="col-6" style="font-size: 18px;font-weight: bold;">
-                        <p>Resident Name: John Smith</p>
-                    </div>
-                    <div class="col-6" style="font-size: 18px;font-weight: bold;">
-                        <p>12:35PM - 13/1/2022</p>
-                    </div>
-                    <div class="col-6">
-                        <p>Reporter Name: Jane Doe</p>
-                    </div>
-                    <div class="col-6">
-                        <p>Location: Main Floor</p>
-                    </div>
-                    <div class="col-6">
-                        <p>Type of Care: Nursing</p>
-                    </div>
-                    <div class="col-6">
-                        <p>Incident Type: Medication Error (Pharmacy Error)</p>
-                    </div>
-                </div>
-            </div>
-        </a><a href="read-only-report.html">
-            <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 0px;">
-                <div class="row">
-                    <div class="col-6" style="font-size: 18px;font-weight: bold;">
-                        <p>Resident Name: John Smith</p>
-                    </div>
-                    <div class="col-6" style="font-size: 18px;font-weight: bold;">
-                        <p>12:35PM - 13/1/2022</p>
-                    </div>
-                    <div class="col-6">
-                        <p>Reporter Name: Jane Doe</p>
-                    </div>
-                    <div class="col-6">
-                        <p>Location: Main Floor</p>
-                    </div>
-                    <div class="col-6">
-                        <p>Type of Care: Nursing</p>
-                    </div>
-                    <div class="col-6">
-                        <p>Incident Type: Fall</p>
-                    </div>
-                </div>
-            </div>
-        </a>
-        <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 0px;">
-            <div class="row">
-                <div class="col-1"><input type="checkbox" style="width: 20px;height: 20px;"></div>
-                <div class="col">
-                    <div class="row">
-                        <div class="col-6" style="font-size: 18px;font-weight: bold;">
-                            <p>Resident Name: John Smith</p>
-                        </div>
-                        <div class="col-6" style="font-size: 18px;font-weight: bold;">
-                            <p>12:35PM - 13/1/2022</p>
-                        </div>
-                        <div class="col-6">
-                            <p>Reporter Name: Jane Doe</p>
-                        </div>
-                        <div class="col-6">
-                            <p>Location: Main Floor</p>
-                        </div>
-                        <div class="col-6">
-                            <p>Type of Care: Nursing</p>
-                        </div>
-                        <div class="col-6">
-                            <p>Incident Type: Fall</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    </nav>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
 </body>
 
 </html>
