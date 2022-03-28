@@ -80,7 +80,7 @@ def form(request):
 def read_report(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
-        return render(request, "read_only_report.html", {"report_id": report_id, "report": report})
+        return render(request, "read_only_report.html", {"username": request.user.username,"report_id": report_id, "report": report})
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
