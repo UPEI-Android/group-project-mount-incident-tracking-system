@@ -4,6 +4,19 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 
+@register.filter(name="index_finder")
+def index_finder(reports, report):
+    temp = 0
+    print("Report ID: " + str(report.id))
+    for x in reports:
+        print("Report List IDs: " + str(x.id))
+        if(report.id == x.id):
+            print("Found, Temp: " + str(temp))
+            return temp
+        temp += 1
+    return 0
+
+
 @register.filter(name="location_options")
 def location_options(value):
     temp = []
