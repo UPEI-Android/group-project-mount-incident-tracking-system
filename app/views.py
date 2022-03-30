@@ -141,9 +141,12 @@ def mark_report_complete(request, report_id):
         report = Report.objects.filter(id=report_id)[0]
         if report.report_status == "SU":
             report.report_status = "CO"
+            report.completing_account = request.user.username
             report.save()
+            messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Marked as Complete')
+            return redirect('read_report', report_id=report_id)
         else:
-            messages.error(request, f'Report cannot be marked as complete')
+            messages.add_message(request, messages.WARNING, f'Incident Report Form Cannot be Marked as Complete, Report Status:  { report.report_status }')
             return redirect('read_report', report_id=report_id)
     else:
         messages.error(request, f'User is not authenticated')
@@ -155,9 +158,12 @@ def sign_off_report(request, report_id):
         report = Report.objects.filter(id=report_id)[0]
         if report.report_status == "PP":
             report.report_status = "SU"
+            report.physician_review_account = request.user.username
             report.save()
+            messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Signed Off')
+            return redirect('read_report', report_id=report_id)
         else:
-            messages.error(request, f'Cannot sign off on report')
+            messages.add_message(request, messages.WARNING, f'Incident Report Form Cannot be Signed Off, Report Status:  { report.report_status }')
             return redirect('read_report', report_id=report_id)
     else:
         messages.error(request, f'User is not authenticated')
