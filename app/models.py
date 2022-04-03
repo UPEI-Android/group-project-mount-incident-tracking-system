@@ -117,9 +117,7 @@ class Report(models.Model):
     blood_sugar = models.PositiveIntegerField(default=0, blank=True, null=True, verbose_name='Blood Sugar')
 
     # Neurovital Signs
-    pupil_size_L = models.IntegerField(default=0, blank=True, null=True, verbose_name='Pupil Size Left')
-    pupil_size_R = models.IntegerField(default=0, blank=True, null=True, verbose_name='Pupil Size Right')
-    CS = models.IntegerField(default=0, blank=True, null=True)
+    NVS_report_completed = models.BooleanField(default=False, null=True, verbose_name='Neuro Vital Signs Report Completed')
 
     # Required Notifications
     family_notified = models.BooleanField(default=False, null=True, verbose_name='Family Notified')

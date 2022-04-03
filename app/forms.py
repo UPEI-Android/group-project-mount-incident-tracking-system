@@ -66,18 +66,6 @@ class ReportForm(forms.ModelForm):
             self.add_error('blood_sugar',
                            forms.ValidationError('Blood Sugar Value is required', code='No Blood Sugar Value'))
 
-        if form_data.get('pupil_size_L') is None:
-            self.add_error('pupil_size_L',
-                           forms.ValidationError('Pupil Size L Neuro-Vital Sign is required', code='No Pupil Size L'))
-
-        if form_data.get('pupil_size_R') is None:
-            self.add_error('pupil_size_R',
-                           forms.ValidationError('Pupil Size R Neuro-Vital Sign is required', code='No Pupil Size R'))
-
-        if form_data.get('CS') is None:
-            self.add_error('CS',
-                           forms.ValidationError('CS Neuro-Vital Sign is required', code='No CS Neuro-Vital Sign'))
-
         # Check if at least one of the individuals involved fields has an input
         if (form_data.get('residents') == '') & (form_data.get('staff') == '') & (form_data.get('others') == ''):
             self.add_error('residents',
