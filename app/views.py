@@ -131,9 +131,9 @@ def edit_report(request, report_id):
 def dashboard_export(request):
     if request.user.is_authenticated:
         reports = Report.objects.all()
-
+        displayReports = reports.reverse()[:50]
         return render(request, "dashboard-export.html",
-                      {"username": request.user.username, "reports": reports, "count": reports.count()})
+                      {"username": request.user.username, "reports": displayReports, "count": displayReports.count()})
 
 
 def mark_report_complete(request, report_id):
@@ -170,7 +170,7 @@ def sign_off_report(request, report_id):
         return redirect('home')
 
 
-def csv_export(request):
+def export(request):
     if request.method == "GET":
         count = int(request.GET.get("report_count"))
         response = HttpResponse(

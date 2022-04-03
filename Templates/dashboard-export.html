@@ -90,13 +90,13 @@
                 </div>
             </div>
         </div>
-    <form action="{% url 'csv_export' %}" method="GET">
+    <form action="{% url 'export' %}" method="GET">
     {% csrf_token %}
         <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
             <div class="row d-flex justify-content-center">
                 <div class="col-12 text-center" style="margin-bottom: 20px;"><a class="btn btn-secondary" role="button" href="{% url 'dashboard' %}" style="width: 80%;">&nbsp;<i class="fa fa-list-ul" style="font-size: 20px;"></i>&nbsp;Deselect</a></div>
-                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><button class="btn btn-secondary" role="button" style="width: 80%;">&nbsp;<i class="fa fa-print" style="font-size: 20px;"></i>&nbsp;Print</button></div>
-                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><button class="btn btn-secondary" type="submit" style="width: 80%;">&nbsp;<i class="fa fa-download" style="font-size: 20px;"></i>&nbsp;Export</button></div>
+                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><button class="btn btn-secondary" type="submit" name="submit" value="PDF"  style="width: 80%;">&nbsp;<i class="fa fa-print" style="font-size: 20px;"></i>&nbsp;Print</button></div>
+                <div class="col-12 col-sm-6 col-lg-5 text-center" style="margin-bottom: 20px;"><button class="btn btn-secondary" type="submit" name="submit" value="CSV" style="width: 80%;">&nbsp;<i class="fa fa-download" style="font-size: 20px;"></i>&nbsp;Export</button></div>
             </div>
         </div>
         {% for report in reports %}
