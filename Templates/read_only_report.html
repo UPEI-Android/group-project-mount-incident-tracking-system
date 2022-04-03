@@ -295,11 +295,45 @@
                         </div>
                     </div>
                     <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
+                        <div class="row" style="margin-top: 20px">
+                            <div class="col-12">
+                                <p>Automatically Generated Information</p>
+                            </div>
+                            <div class="col-6">
+                                <label> Report Status: </label>
+                                <input type="text" value="{{ report.report_status }}" disabled>
+                            </div>
+                            <div class="col-6">
+                                <label> Report Submission Date: </label>
+                                <input type="datetime-local" value="{{ report.report_submission_date|date:"Y-m-d\TH:i" }}" disabled>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <label> Reporting Account: </label>
+                                <input type="text" value="{{ report.reporter_account }}" disabled>
+                            </div>
+                            <div class="col-12">
+                                <label> Reviewing Physician's Account: </label>
+                                <input type="text" value="{{ report.physician_review_account }}" disabled>
+                            </div>
+                            <div class="col-12">
+                                <label> Supervising Reviewer's Account: </label>
+                                <input type="text" value="{{ report.completing_account }}" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
+                        <div class="col">
+                            <p style="color: var(--bs-red);font-style: italic;text-decoration:  underline;">SIGNATURES HERE (FORMAT/PROTOCOL TO BE DETERMINED)</p>
+                        </div>
                         <div class="row">
                                 <p>Physician Comments:</p>
                             </div>
                             <div class="col-12"><textarea class="form-control form-control-lg" name="physician_comments" disabled>{{ report.physician_comments }}</textarea></div>
                         </div>
+                    </div>
+                    <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
                         <div class="row" style="margin-top: 20px">
                             <div class="col-4">
                                 <a href="/edit_report/{{ report.id }}">
