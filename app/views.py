@@ -164,7 +164,7 @@ def sign_off_report(request, report_id):
         return redirect('home')
 
 
-def csv_export(request):
+def export(request):
     if request.method == "GET":
         count = int(request.GET.get("report_count"))
         response = HttpResponse(
