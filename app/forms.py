@@ -149,3 +149,8 @@ class ReportForm(forms.ModelForm):
                 self.add_error('supervisor_notification_date',
                                forms.ValidationError('No Supervisor Notification Date Provided',
                                                      code='No Supervisor Date'))
+
+        if form_data.get('residents') != '' & form_data.get('incident_documented_on_chart') is None:
+            self.add_error('incident_documented_on_chart', forms.ValidationError(
+                'Incident Documented on Chart required for Incidents Involving Residents'),
+                           code="Incident Documented on Chart Required")
