@@ -41,6 +41,17 @@ def care_options(value):
     return mark_safe(s)
 
 
+@register.filter(name="report_status")
+def report_status(value):
+    temp = []
+    s = ""
+    for x in value:
+        if x.report_status not in temp:
+            temp.append(x.community)
+            s = s + ('\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" value="' + str(x.report_status) + '" id="formCheck-8">\n<label class="form-check-label" for="formCheck-8">\n' + str(x.report_status) + '\n</label>\n</div>\n')
+
+    return mark_safe(s)
+
 
 @register.filter(name="incident_options")
 def incident_options(value):
