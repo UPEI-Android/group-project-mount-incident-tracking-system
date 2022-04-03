@@ -124,9 +124,9 @@ class Report(models.Model):
     family_name = models.CharField(max_length=120, default='', blank=True, verbose_name='Family Name')
     family_notification_date = models.DateTimeField(default='1999-12-31 11:59[:59[.999999]][America/Halifax]', blank=True, null=True, verbose_name='Family Notification Date')
 
-    physician_notified = models.BooleanField(default=False, null=True, verbose_name='Physician Notified')
-    physician_name = models.CharField(max_length=120, default='', verbose_name='Physician Name', blank=True)
-    physician_notification_date = models.DateTimeField(default='1999-12-31 11:59[:59[.999999]][America/Halifax]', blank=True, null=True, verbose_name='Physician Notification Date')
+    physician_notified = models.BooleanField(default=False, null=True, verbose_name='Physician or Provider Notified')
+    physician_name = models.CharField(max_length=120, default='', verbose_name='Physician or Provider\'s Name', blank=True)
+    physician_notification_date = models.DateTimeField(default='1999-12-31 11:59[:59[.999999]][America/Halifax]', blank=True, null=True, verbose_name='Physician or Provider Notification Date')
 
     supervisor_notified = models.BooleanField(default=False, null=True, verbose_name='Supervisor Notified')
     supervisor_name = models.CharField(max_length=120, default='', verbose_name='Supervisor Name', blank=True)
