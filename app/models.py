@@ -35,8 +35,21 @@ class Report(models.Model):
     writer_first_name = models.CharField(max_length=60, default='', blank=True, verbose_name='First Name of Report Writer')
     writer_last_name = models.CharField(max_length=60, default='', blank=True, verbose_name='Last Name of Report Writter')
     writer_position = models.CharField(max_length=40, default='', blank=True, verbose_name='Position of Report Writer')
-    incident_location = models.CharField(max_length=120, default='', blank=True, verbose_name='Incident Location')
     date_of_incident = models.DateTimeField(default='1999-12-31 11:59[:59[.999999]][America/Halifax]', blank=True, null=True, verbose_name='Date of Incident')
+    INCIDENT_LOCATION_BATHROOM = ("BA", "Bathroom")
+    INCIDENT_LOCATION_BEDROOM = ("BE", "Bedroom")
+    INCIDENT_LOCATION_HALLWAY = ("HA", "Hallway")
+    INCIDENT_LOCATION_STAIRS = ("ST", "Stairs")
+    INCIDENT_LOCATION_OTHER = ("OT", "Other")
+    INCIDENT_LOCATIONS = [
+        INCIDENT_LOCATION_BATHROOM,
+        INCIDENT_LOCATION_BEDROOM,
+        INCIDENT_LOCATION_HALLWAY,
+        INCIDENT_LOCATION_STAIRS,
+        INCIDENT_LOCATION_OTHER
+    ]
+    incident_location = models.CharField(max_length=2, choices=INCIDENT_LOCATIONS, default=None, blank=True, null=True, verbose_name="Incident Location")
+    incident_location_other = models.CharField(max_length=80, default='', blank=True, verbose_name='Incident Location Description')
 
     # Radio Buttons
     fall_risk_assessment = models.BooleanField(default=False, null=True, verbose_name='Fall Risk Assessment Performed')

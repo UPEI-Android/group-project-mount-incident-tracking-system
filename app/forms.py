@@ -24,7 +24,7 @@ class ReportForm(forms.ModelForm):
             self.add_error('writer_position',
                            forms.ValidationError('Position of Writer is required', code='No Position of Writer'))
 
-        if form_data.get('incident_location') == '':
+        if form_data.get('incident_location') is None:
             self.add_error('incident_location',
                            forms.ValidationError('Incident Location is required', code='No Incident Location'))
 
@@ -80,7 +80,7 @@ class ReportForm(forms.ModelForm):
                            forms.ValidationError('Individuals Involved must be filled', code='No Individuals'))
 
         # Check if the community field has been selected if the incident involves a resident
-        if (form_data.get('residents') is not None) & (form_data.get('community') is None):
+        if (form_data.get('residents') != '') & (form_data.get('community') is None):
             self.add_error('community', forms.ValidationError('Resident\'s Community Must Be Selected',
                                                               code='Empty Community'))
 
@@ -89,6 +89,14 @@ class ReportForm(forms.ModelForm):
             self.add_error('residents',
                            forms.ValidationError('Resident\'s name not provided after selecting resident\'s community',
                                                  code='Empty Resident'))
+
+        # Check if the incident location has been selected and other location specified if necessary
+        if form_data.get('incident_location') is None:
+            self.add_error('incident_location', forms.ValidationError('Incident Location not specified',
+                                                                      code='No Location'))
+        elif (form_data.get('incident_location') == 'OT') & (form_data.get('incident_location_other') == ''):
+            self.add_error('incident_location_other', forms.ValidationError('Other Incident Location Not Specified',
+                                                                            code='No Incident Location Description'))
 
         # Check if the incident type has been selected
         if ((form_data.get('near_miss') is None) & (form_data.get('fall') is None) &

@@ -114,7 +114,13 @@
                         <p>Reporter Name: {{ report.writer_first_name }} {{ report.writer_last_name }}, {{ report.writer_position }}</p>
                     </div>
                     <div class="col-6">
-                        <p>Location: {{ report.incident_location }}</p>
+                        <p>Location:
+                            {% if report.incident_location == "BA" %} Bathroom
+                            {% elif report.incident_location == "BE" %} Bedroom
+                            {% elif report.incident_location == "HA" %} Hallway
+                            {% elif report.incident_location == "ST" %} Stairway
+                            {% elif report.incident_location == "OT" %} Other: {{ report.incident_location_other }}
+                            {% endif %}</p>
                     </div>
                     <div class="col-6">
                         <p>Community: {{ report.community }}</p>
