@@ -66,7 +66,18 @@
                         </div>
                         <p>Staff:</p><input class="form-control" type="text" placeholder="Staff" name="staff" value="{{ report.staff }}" disabled>
                         <p>Other(s): (visitor, guest, etc.)</p><textarea class="form-control" name="others" placeholder="Others" disabled>{{ report.others }}</textarea>
-                        <p>Name of Writer:</p><input class="form-control" type="text" name="name_of_writer" placeholder="Name" value="{{ report.name_of_writer }}" disabled>
+                        <p>Name of Writer:</p>
+                            <div class="row">
+                                <div class="col-4">
+                                    <input class="form-control" type="text" name="writer_first_name" placeholder="First Name" value="{{ report.writer_first_name }}" disabled>
+                                </div>
+                                <div class="col-4">
+                                    <input class="form-control" type="text" name="writer_last_name" placeholder="Last Name" value="{{ report.writer_last_name }}" disabled>
+                                </div>
+                                <div class="col-4">
+                                    <input class="form-control" type="text" name="writer_position" placeholder="Position" value="{{ report.writer_position }}" disabled>
+                                </div>
+                            </div>
                         <p>Date and Time of Incident:</p><input class="form-control" type="datetime-local" name="date_of_incident" value="{{ report.date_of_incident|date:"Y-m-d\TH:i" }}" disabled>
                         <p>Incident Location:</p><input class="form-control" type="text" name="incident_location" placeholder="Location" value="{{ report.incident_location }}" disabled>
                     </div>

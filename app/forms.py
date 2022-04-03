@@ -11,9 +11,18 @@ class ReportForm(forms.ModelForm):
         form_data = self.cleaned_data
 
         # Checks that required fields are apparent in data
-        if form_data.get('name_of_writer') == '':
-            self.add_error('name_of_writer',
-                           forms.ValidationError('Name of Writer is required', code='No Name of Writer'))
+
+        if form_data.get('writer_first_name') == '':
+            self.add_error('writer_first_name',
+                           forms.ValidationError('First Name of Writer is required', code='No First Name of Writer'))
+
+        if form_data.get('writer_last_name') == '':
+            self.add_error('writer_last_name',
+                           forms.ValidationError('Last Name of Writer is required', code='No Last Name of Writer'))
+
+        if form_data.get('writer_position') == '':
+            self.add_error('writer_position',
+                           forms.ValidationError('Position of Writer is required', code='No Position of Writer'))
 
         if form_data.get('incident_location') == '':
             self.add_error('incident_location',

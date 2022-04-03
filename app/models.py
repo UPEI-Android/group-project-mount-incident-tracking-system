@@ -32,7 +32,9 @@ class Report(models.Model):
     others = models.TextField(default='', blank=True, verbose_name='Other Individual(s) Involved')
 
     # Basic Incident Information
-    name_of_writer = models.CharField(max_length=120, default='', blank=True, verbose_name='Name of Report Writer')
+    writer_first_name = models.CharField(max_length=60, default='', blank=True, verbose_name='First Name of Report Writer')
+    writer_last_name = models.CharField(max_length=60, default='', blank=True, verbose_name='Last Name of Report Writter')
+    writer_position = models.CharField(max_length=40, default='', blank=True, verbose_name='Position of Report Writer')
     incident_location = models.CharField(max_length=120, default='', blank=True, verbose_name='Incident Location')
     date_of_incident = models.DateTimeField(default='1999-12-31 11:59[:59[.999999]][America/Halifax]', blank=True, null=True, verbose_name='Date of Incident')
 

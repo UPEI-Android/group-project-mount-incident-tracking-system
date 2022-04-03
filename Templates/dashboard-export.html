@@ -113,10 +113,10 @@
                             {% if report.others != "" %} Others Name: {{ report.others }} <br/>{% endif %}</p>
                         </div>
                         <div class="col-6" style="font-size: 18px;font-weight: bold;">
-                            <p>{{ report.date_of_incident }}</p>
+                            <p>{% if report.date_of_incident is not None %}{{ report.date_of_incident }}{% else %}{{ report.report_submission_date }} {% endif %}</p>
                         </div>
                         <div class="col-6">
-                            <p>Reporter Name: {{ report.name_of_writer }}</p>
+                            <p>Reporter Name: {{ report.writer_first_name }} {{ report.writer_last_name }}, {{ report.writer_position }}</p>
                         </div>
                         <div class="col-6">
                             <p>Community: {{ report.incident_location }}</p>
