@@ -280,3 +280,6 @@ def logout_view(request):
     else:
         messages.add_message(request, messages.WARNING, 'No User Authenticated')
     return redirect('home')
+
+def dashboard_functionality(request):
+    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
