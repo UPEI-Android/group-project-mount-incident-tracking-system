@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.core.validators import MaxValueValidator, RegexValidator
 
 
 class Report(models.Model):
@@ -108,12 +109,12 @@ class Report(models.Model):
     condition_other_description = models.TextField(default='', blank=True, verbose_name='Other Condition Description')
 
     # Vital Signs
-    T = models.IntegerField(default=0, blank=True, null=True)
-    P = models.IntegerField(default=0, blank=True, null=True)
-    R = models.IntegerField(default=0, blank=True, null=True)
-    BP = models.IntegerField(default=0, blank=True, null=True)
-    SpO2 = models.IntegerField(default=0, blank=True, null=True)
-    blood_sugar = models.IntegerField(default=0, blank=True, null=True, verbose_name='Blood Sugar')
+    T = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(50)], blank=True, null=True)
+    P = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(500)], blank=True, null=True)
+    R = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(500)], blank=True, null=True)
+    BP = models.CharField(default=0, max_length=7, validators=[RegexValidator('\\d{1,3}\\/\\d{1,3}')], blank=True, null=True)
+    SpO2 = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(100)], blank=True, null=True)
+    blood_sugar = models.PositiveIntegerField(default=0, blank=True, null=True, verbose_name='Blood Sugar')
 
     # Neurovital Signs
     pupil_size_L = models.IntegerField(default=0, blank=True, null=True, verbose_name='Pupil Size Left')
