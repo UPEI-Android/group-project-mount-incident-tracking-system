@@ -80,7 +80,8 @@ def form(request):
 def read_report(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
-        return render(request, "read_only_report.html", {"username": request.user.username,"report_id": report_id, "report": report})
+        return render(request, "read_only_report.html",
+                      {"username": request.user.username, "report_id": report_id, "report": report})
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
@@ -146,7 +147,8 @@ def mark_report_complete(request, report_id):
             messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Marked as Complete')
             return redirect('read_report', report_id=report_id)
         else:
-            messages.add_message(request, messages.WARNING, f'Incident Report Form Cannot be Marked as Complete, Report Status:  { report.report_status }')
+            messages.add_message(request, messages.WARNING,
+                                 f'Incident Report Form Cannot be Marked as Complete, Report Status:  {report.report_status}')
             return redirect('read_report', report_id=report_id)
     else:
         messages.error(request, f'User is not authenticated')
@@ -163,7 +165,8 @@ def sign_off_report(request, report_id):
             messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Signed Off')
             return redirect('read_report', report_id=report_id)
         else:
-            messages.add_message(request, messages.WARNING, f'Incident Report Form Cannot be Signed Off, Report Status:  { report.report_status }')
+            messages.add_message(request, messages.WARNING,
+                                 f'Incident Report Form Cannot be Signed Off, Report Status:  {report.report_status}')
             return redirect('read_report', report_id=report_id)
     else:
         messages.error(request, f'User is not authenticated')
@@ -281,5 +284,103 @@ def logout_view(request):
         messages.add_message(request, messages.WARNING, 'No User Authenticated')
     return redirect('home')
 
+
 def dashboard_functionality(request):
-    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
+    if request.method == "GET":
+        dashboard_filtering(request)
+
+
+def dashboard_filtering(request):
+    reports_to_display = apply_filters(request)
+    if request.GET['display_all_toggle']:
+        return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display})
+    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display[:50]})
+
+
+def apply_filters(request):
+    reports = Report.objects.all()
+    results = []
+
+    location_options = request.GET['location_options_list'].split('?')
+    care_options = request.GET['care_options_list'].split('?')
+    status_options = request.GET['status_options_list'].split('?')
+    incident_options = request.GET['incident_options_list'].split('?')
+
+    for x in reports:
+        if resident_filter(x, request.GET['residents_name']) and reporter_filter(x, request.GET[
+            'reporter_name']) and location_filter(x, location_options) and care_filter(x,
+                                                                                       care_options) and status_filter(
+                x, status_options) and incident_filter(x, incident_options):
+            results.append(x)
+
+    return results
+
+
+def location_filter(report, location_list):
+    for x in location_list:
+        if x == report.incident_location:
+            return True
+    return False
+
+
+def care_filter(report, care_list):
+    for x in care_list:
+        if x == report.community:
+            return True
+    return False
+
+
+def incident_filter(report, incident_list):
+    if report.near_miss:
+        for x in incident_list:
+            if x == "Near Miss":
+                return True
+    if report.fall:
+        for x in incident_list:
+            if x == "Fall":
+                return True
+    if report.medication_error:
+        for x in incident_list:
+            if x == "Medication Error":
+                return True
+    if report.treatment_error:
+        for x in incident_list:
+            if x == "Treatment Error":
+                return True
+    if report.death:
+        for x in incident_list:
+            if x == "Death":
+                return True
+    if report.other_type_of_incident:
+        for x in incident_list:
+            if x == "Other":
+                return True
+    if report.staff_injury:
+        for x in incident_list:
+            if x == "Staff Injury":
+                return True
+
+    return True
+
+
+def status_filter(report, incident_list):
+    for x in incident_list:
+        if x == report.report_status:
+            return True
+    return False
+
+
+def reporter_filter(report, query):
+    if report.name_of_writer.lower() == query.lower():
+        return True
+    if query.lower() in report.name_of_writer.lower():
+        return True
+    return False
+
+
+def resident_filter(report, query):
+    if report.residents.lower() == query.lower():
+        return True
+    if query.lower() in report.residents.lower():
+        return True
+    return False
