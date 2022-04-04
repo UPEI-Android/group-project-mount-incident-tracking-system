@@ -198,50 +198,50 @@ def export(request):
             report_id = request.GET.get("reportID" + str(i))
             # report_id = int(report_id)
             print("reportID:" + str(report_id) + " Count: " + str(count))
-            if (report_id != None):
+            if report_id != None:
                 report = Report.objects.filter(id=report_id)[0]
                 print("Report Loaded From DataBase: " + str(report.id))
                 medication_error_reason = ""
-                if (report.medication_error):
-                    if (report.incorrect_resident):
+                if report.medication_error:
+                    if report.incorrect_resident:
                         medication_error_reason += "Incorrect Resident.\n"
-                    if (report.incorrect_route):
+                    if report.incorrect_route:
                         medication_error_reason += "Incorrect Route.\n"
-                    if (report.incorrect_dose):
+                    if report.incorrect_dose:
                         medication_error_reason += "Incorrect Dose.\n"
-                    if (report.incorrect_label):
+                    if report.incorrect_label:
                         medication_error_reason += "Incorrect Label.\n"
-                    if (report.incorrect_name):
+                    if report.incorrect_name:
                         medication_error_reason += "Incorrect Name.\n"
-                    if (report.incorrect_time):
+                    if report.incorrect_time:
                         medication_error_reason += "Incorrect Time.\n"
-                    if (report.incorrect_drug):
+                    if report.incorrect_drug:
                         medication_error_reason += "Incorrect Drug.\n"
-                    if (report.extra_dose_given):
+                    if report.extra_dose_given:
                         medication_error_reason += "Extra Dose Given.\n"
-                    if (report.dose_omitted):
+                    if report.dose_omitted:
                         medication_error_reason += "Dose Omitted.\n"
-                    if (report.pharmacy_error):
+                    if report.pharmacy_error:
                         medication_error_reason += "Pharmacy Error.\n"
-                    if (report.other_medication_error):
+                    if report.other_medication_error:
                         medication_error_reason += "Other Medication Error.\n"
 
                 type_of_incident = ""
-                if (report.near_miss):
+                if report.near_miss:
                     type_of_incident += "Near Miss\n"
-                if (report.fall):
+                if report.fall:
                     type_of_incident += "Fall\n"
-                if (report.medication_error):
+                if report.medication_error:
                     type_of_incident += "Medication Error\n"
-                if (report.treatment_error):
+                if report.treatment_error:
                     type_of_incident += "Treatment Error\n"
-                if (report.loss_of_property):
+                if report.loss_of_property:
                     type_of_incident += "Loss of Property\n"
-                if (report.death):
+                if report.death:
                     type_of_incident += "Death\n"
-                if (report.other_type_of_incident):
+                if report.other_type_of_incident:
                     type_of_incident += "Other Type of Incident\n"
-                if (report.staff_injury):
+                if report.staff_injury:
                     type_of_incident += "Staff Injury\n"
 
                 writer.writerow(
@@ -260,9 +260,6 @@ def export(request):
                      report.follow_up_notes, report.physician_comments, report.report_submission_date,
                      report.reporter_account,
                      report.completing_account, report.physician_review_account, report.report_status])
-
-            # for key, value in this_form.cleaned_data.iteritems():
-            # writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
 
         return response
 
@@ -291,28 +288,25 @@ def dashboard_functionality(request):
 
 
 def dashboard_filtering(request):
-    reports_to_display = apply_filters(request)
-    if request.GET['display_all_toggle']:
+    reports = Report.objects.all()
+    if request.GET.get('display_all_toggle') is not None:
+        reports_to_display = apply_filters(request)
         return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display})
-    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display[:50]})
+    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50]})
 
 
 def apply_filters(request):
     reports = Report.objects.all()
     results = []
 
-    location_options = request.GET['location_options_list'].split('?')
-    care_options = request.GET['care_options_list'].split('?')
-    status_options = request.GET['status_options_list'].split('?')
-    incident_options = request.GET['incident_options_list'].split('?')
+    location_options = request.GET.get('location_options_list').split('?')
+    care_options = request.GET.get('care_options_list').split('?')
+    status_options = request.GET.get('status_options_list').split('?')
+    incident_options = request.GET.get('incident_options_list').split('?')
 
     for x in reports:
-        if resident_filter(x, request.GET['residents_name']) and reporter_filter(x, request.GET[
-            'reporter_name']) and location_filter(x, location_options) and care_filter(x,
-                                                                                       care_options) and status_filter(
-                x, status_options) and incident_filter(x, incident_options):
+        if resident_filter(x, request.GET.get('residents_name')) and reporter_filter(x, request.GET.get('reporter_name')) and location_filter(x, location_options) and care_filter(x, care_options) and status_filter(x, status_options) and incident_filter(x, incident_options):
             results.append(x)
-
     return results
 
 
