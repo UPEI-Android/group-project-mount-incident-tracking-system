@@ -1,3 +1,4 @@
+import pytz
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
@@ -7,6 +8,7 @@ from app.models import Report
 from app.forms import ReportForm
 from django import forms
 import csv
+from datetime import datetime
 
 
 # Create your views here.
@@ -283,35 +285,58 @@ def logout_view(request):
 
 
 def dashboard_functionality(request):
+    print("Dashboard Functionality - 286")
     if request.method == "GET":
-        dashboard_filtering(request)
+        print("Dashboard Functionality - 288")
+        return dashboard_filtering(request)
+    reports = Report.objects.all()
+    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50]})
 
 
 def dashboard_filtering(request):
-    reports = Report.objects.all()
+    reports_to_display = apply_filters(request)
     if request.GET.get('display_all_toggle') is not None:
-        reports_to_display = apply_filters(request)
-        return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display})
-    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50]})
+        return render(request, "dashboard.html",
+                      {"username": request.user.username, "reports": reports_to_display[:50]})
+    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display[:50]})
+
+
+def get_filter_selection(request, options):
+    temp = []
+    for x in options:
+        if request.GET.get(x) is not None:
+            temp.append(x)
+    if len(temp) == 0:
+        return options
+    return temp
 
 
 def apply_filters(request):
     reports = Report.objects.all()
     results = []
 
+    # Get dropdown options
     location_options = request.GET.get('location_options_list').split('?')
     care_options = request.GET.get('care_options_list').split('?')
     status_options = request.GET.get('status_options_list').split('?')
     incident_options = request.GET.get('incident_options_list').split('?')
 
+    # Get selected options
+    location_selection = get_filter_selection(request, location_options)
+    care_selection = get_filter_selection(request, care_options)
+    status_selection = get_filter_selection(request, status_options)
+    incident_selection = get_filter_selection(request, incident_options)
+
     for x in reports:
-        if resident_filter(x, request.GET.get('residents_name')) and reporter_filter(x, request.GET.get('reporter_name')) and location_filter(x, location_options) and care_filter(x, care_options) and status_filter(x, status_options) and incident_filter(x, incident_options):
+        if resident_filter(x, request.GET.get('residents_name')) and reporter_filter(x, request.GET.get(
+                'reporter_name')) and location_filter(x, location_selection) and care_filter(x, care_selection) and status_filter(x, status_selection) and incident_filter(x, incident_selection) and date_filter(x, request):
             results.append(x)
     return results
 
 
 def location_filter(report, location_list):
     for x in location_list:
+        print("location_list = " + x)
         if x == report.incident_location:
             return True
     return False
@@ -365,6 +390,8 @@ def status_filter(report, incident_list):
 
 
 def reporter_filter(report, query):
+    if query is None:  # if this field hasn't been used just ignore it
+        return True
     if report.name_of_writer.lower() == query.lower():
         return True
     if query.lower() in report.name_of_writer.lower():
@@ -373,8 +400,32 @@ def reporter_filter(report, query):
 
 
 def resident_filter(report, query):
+    if query is None:  # if this field hasn't been used just ignore it
+        return True
     if report.residents.lower() == query.lower():
         return True
     if query.lower() in report.residents.lower():
         return True
     return False
+
+
+def date_filter(report, request):
+    from_bool = False
+    to_bool = False
+    if len(str(request.GET.get('date_from'))) > 0 and report.date_of_incident is not None:
+        date_from = datetime.strptime(request.GET.get('date_from'), '%Y-%m-%d').replace(tzinfo=pytz.timezone('America/Halifax'))
+
+        if report.date_of_incident > date_from:
+            from_bool = True    #if date is after "from" date
+    else:
+        from_bool = True    #if no "from" date is selected then all are true
+
+    if len(str(request.GET.get('date_to'))) > 0 :
+        if report.date_of_incident is not None:
+            date_to = datetime.strptime(request.GET.get('date_to'), '%Y-%m-%d').replace(tzinfo=pytz.timezone('America/Halifax'))
+            if report.date_of_incident < date_to:
+                to_bool = True  # if date is after "from" date
+    else:
+        from_bool = True  # if no "from" date is selected then all are true
+
+    return from_bool and to_bool
