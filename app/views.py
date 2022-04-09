@@ -7,6 +7,7 @@ from app.models import Report
 from app.forms import ReportForm
 from django import forms
 import csv
+from app.decorators import allowed_users
 
 
 # Create your views here.
@@ -80,12 +81,14 @@ def form(request):
 def read_report(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
-        return render(request, "read_only_report.html", {"username": request.user.username,"report_id": report_id, "report": report})
+        return render(request, "read_only_report.html",
+                      {"username": request.user.username, "report_id": report_id, "report": report})
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
 
 
+@allowed_users(allowed_roles={"admins"})
 def edit_report(request, report_id):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -98,7 +101,8 @@ def edit_report(request, report_id):
                     # Create an instance of the database object to add the report status to
 
                     report_data = report.save(commit=False)
-                    # Check if the resident is in a Nursing Care community to indicate that a Physician must review the report
+                    # Check if the resident is in a Nursing Care community to indicate that a Physician must review
+                    # the report
                     if 'NC' in report_data.community:
                         report_data.report_status = 'PP'
                     else:
@@ -146,7 +150,8 @@ def mark_report_complete(request, report_id):
             messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Marked as Complete')
             return redirect('read_report', report_id=report_id)
         else:
-            messages.add_message(request, messages.WARNING, f'Incident Report Form Cannot be Marked as Complete, Report Status:  { report.report_status }')
+            messages.add_message(request, messages.WARNING,
+                                 f'Incident Report Form Cannot be Marked as Complete, Report Status:  {report.report_status}')
             return redirect('read_report', report_id=report_id)
     else:
         messages.error(request, f'User is not authenticated')
@@ -163,7 +168,8 @@ def sign_off_report(request, report_id):
             messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Signed Off')
             return redirect('read_report', report_id=report_id)
         else:
-            messages.add_message(request, messages.WARNING, f'Incident Report Form Cannot be Signed Off, Report Status:  { report.report_status }')
+            messages.add_message(request, messages.WARNING,
+                                 f'Incident Report Form Cannot be Signed Off, Report Status:  {report.report_status}')
             return redirect('read_report', report_id=report_id)
     else:
         messages.error(request, f'User is not authenticated')
