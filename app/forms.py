@@ -48,12 +48,16 @@ class ReportForm(forms.ModelForm):
         if form_data.get('R') is None:
             self.add_error('R', forms.ValidationError('R Vital Sign is required', code='No R Vital Sign'))
 
-        if form_data.get('BP') == '':
+        if form_data.get('BP') is None:
             self.add_error('BP', forms.ValidationError('BP Vital Sign is required', code='No BP Vital Sign'))
         else:
-            bp = form_data.get('BP').split("/")
-            if bp[0].isdigit() & bp[1].isdigit():
-                if (int(bp[0]) > 500) | (int(bp[1]) > 500):
+            if "/" not in form_data.get('BP'):
+                bp = form_data.get('BP').split("/")
+                if bp[0].isdigit() & bp[1].isdigit():
+                    if (int(bp[0]) > 500) | (int(bp[1]) > 500):
+                        self.add_error('BP',
+                                       forms.ValidationError('BP Vital Sign is not Valid', code='Invalid BP Vital Sign'))
+                else:
                     self.add_error('BP',
                                    forms.ValidationError('BP Vital Sign is not Valid', code='Invalid BP Vital Sign'))
             else:
@@ -150,7 +154,7 @@ class ReportForm(forms.ModelForm):
                                forms.ValidationError('No Supervisor Notification Date Provided',
                                                      code='No Supervisor Date'))
 
-        if form_data.get('residents') != '' & form_data.get('incident_documented_on_chart') is None:
+        if (form_data.get('residents') != '') & (form_data.get('incident_documented_on_chart') is None):
             self.add_error('incident_documented_on_chart', forms.ValidationError(
-                'Incident Documented on Chart required for Incidents Involving Residents'),
-                           code="Incident Documented on Chart Required")
+                'Incident Documented on Chart required for Incidents Involving Residents',
+                           code="Incident Documented on Chart Required"))
