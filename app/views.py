@@ -41,7 +41,8 @@ def form(request):
                     # Create an instance of the database object to add the report status to
 
                     report_data = report.save(commit=False)
-                    # Check if the resident is in a Nursing Care community to indicate that a Physician must review the report
+                    # Check if the resident is in a Nursing Care community to indicate that a Physician must review
+                    # the report
                     if 'NC' in report_data.community:
                         report_data.report_status = 'PP'
                     else:
@@ -143,6 +144,7 @@ def edit_report(request, report_id):
         return redirect('home')
 
 
+@allowed_users(allowed_roles=["admins"])
 def dashboard_export(request):
     if request.user.is_authenticated:
         reports = Report.objects.all()
