@@ -196,13 +196,10 @@ def export(request):
              'Reporter Account', 'Completion Account', 'Physician Account', 'Report Status'])
 
         for i in range(count):
-            print("I Value: " + str(i))
             report_id = request.GET.get("reportID" + str(i))
             # report_id = int(report_id)
-            print("reportID:" + str(report_id) + " Count: " + str(count))
             if report_id != None:
                 report = Report.objects.filter(id=report_id)[0]
-                print("Report Loaded From DataBase: " + str(report.id))
                 medication_error_reason = ""
                 if report.medication_error:
                     if report.incorrect_resident:
@@ -285,9 +282,7 @@ def logout_view(request):
 
 
 def dashboard_functionality(request):
-    print("Dashboard Functionality - 286")
     if request.method == "GET":
-        print("Dashboard Functionality - 288")
         return dashboard_filtering(request)
     reports = Report.objects.all()
     return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50]})
@@ -297,7 +292,7 @@ def dashboard_filtering(request):
     reports_to_display = apply_filters(request)
     if request.GET.get('display_all_toggle') is not None:
         return render(request, "dashboard.html",
-                      {"username": request.user.username, "reports": reports_to_display[:50]})
+                      {"username": request.user.username, "reports": reports_to_display})
     return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display[:50]})
 
 
@@ -306,8 +301,8 @@ def get_filter_selection(request, options):
     for x in options:
         if request.GET.get(x) is not None:
             temp.append(x)
-    if len(temp) == 0:
-        return options
+    #if len(temp) == 0:
+    #    return options
     return temp
 
 
@@ -326,7 +321,6 @@ def apply_filters(request):
     care_selection = get_filter_selection(request, care_options)
     status_selection = get_filter_selection(request, status_options)
     incident_selection = get_filter_selection(request, incident_options)
-
     for x in reports:
         if resident_filter(x, request.GET.get('residents_name')) and reporter_filter(x, request.GET.get(
                 'reporter_name')) and location_filter(x, location_selection) and care_filter(x, care_selection) and status_filter(x, status_selection) and incident_filter(x, incident_selection) and date_filter(x, request):
@@ -335,14 +329,17 @@ def apply_filters(request):
 
 
 def location_filter(report, location_list):
+    if len(location_list) == 0:
+        return True
     for x in location_list:
-        print("location_list = " + x)
         if x == report.incident_location:
             return True
     return False
 
 
 def care_filter(report, care_list):
+    if len(care_list) == 0:
+        return True
     for x in care_list:
         if x == report.community:
             return True
@@ -350,6 +347,8 @@ def care_filter(report, care_list):
 
 
 def incident_filter(report, incident_list):
+    if len(incident_list) == 0:
+        return True
     if report.near_miss:
         for x in incident_list:
             if x == "Near Miss":
@@ -379,18 +378,20 @@ def incident_filter(report, incident_list):
             if x == "Staff Injury":
                 return True
 
-    return True
+    return False
 
 
-def status_filter(report, incident_list):
-    for x in incident_list:
+def status_filter(report, status_list):
+    if len(status_list) == 0:
+        return True
+    for x in status_list:
         if x == report.report_status:
             return True
     return False
 
 
 def reporter_filter(report, query):
-    if query is None:  # if this field hasn't been used just ignore it
+    if query == "":  # if this field hasn't been used just ignore it
         return True
     if report.name_of_writer.lower() == query.lower():
         return True
@@ -400,7 +401,7 @@ def reporter_filter(report, query):
 
 
 def resident_filter(report, query):
-    if query is None:  # if this field hasn't been used just ignore it
+    if query == "":  # if this field hasn't been used just ignore it
         return True
     if report.residents.lower() == query.lower():
         return True
@@ -412,7 +413,8 @@ def resident_filter(report, query):
 def date_filter(report, request):
     from_bool = False
     to_bool = False
-    if len(str(request.GET.get('date_from'))) > 0 and report.date_of_incident is not None:
+
+    if request.GET.get('date_from') != "" and report.date_of_incident is not None:
         date_from = datetime.strptime(request.GET.get('date_from'), '%Y-%m-%d').replace(tzinfo=pytz.timezone('America/Halifax'))
 
         if report.date_of_incident > date_from:
@@ -420,12 +422,12 @@ def date_filter(report, request):
     else:
         from_bool = True    #if no "from" date is selected then all are true
 
-    if len(str(request.GET.get('date_to'))) > 0 :
+    if request.GET.get('date_to') != "":
         if report.date_of_incident is not None:
             date_to = datetime.strptime(request.GET.get('date_to'), '%Y-%m-%d').replace(tzinfo=pytz.timezone('America/Halifax'))
             if report.date_of_incident < date_to:
                 to_bool = True  # if date is after "from" date
     else:
-        from_bool = True  # if no "from" date is selected then all are true
+        to_bool = True  # if no "from" date is selected then all are true
 
     return from_bool and to_bool
