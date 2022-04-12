@@ -321,9 +321,11 @@
                                 <div class="col-12"><textarea class="form-control form-control-lg" name="physician_comments">{{ report.physician_comments }}</textarea></div>
                             </div>
                             <div class="row" style="margin-top: 20px">
+                                {%  if report.report_status is "PC" %}
                                 <div class="col-6">
                                   <button class="btn btn-primary btn-lg" role="button" style="font-family: ABeeZee, sans-serif;" type="submit" name="submit" value="submit">Submit</button>
                                 </div>
+                                {% endif %}
                                 <div class="col-6">
                                   <button class="btn btn-primary btn-lg" role="button" style="font-family: ABeeZee, sans-serif;" type="submit" name="submit" value="save">Save</button>
                                 </div>
