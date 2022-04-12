@@ -96,10 +96,11 @@ def edit_report(request, report_id):
         report = ReportForm(request.POST, instance=report_instance)
         admin_user = 'admins'
         general_staff = 'general_staff'
+        supervisor = 'supervisors'
         userr = User.objects.get(username=report_instance.reporter_account)
 
-        if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[0].name == general_staff) or (
-                request.user.groups.all()[0].name == admin_user):
+        if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[0].name == general_staff and report_instance.report_status == 'PC') or (
+                request.user.groups.all()[0].name == admin_user) or ( request.user.groups.all()[0].name == supervisor):
 
             if request.method == "POST":
                 if request.POST['submit'] == 'submit':
@@ -288,8 +289,15 @@ def export(request):
 
 def dashboard(request):
     if request.user.is_authenticated:
-        reports = Report.objects.all()
-        return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
+        if request.user.groups.all()[0].name == 'general_staff':
+            report = Report.objects.filter(report_status='PC', reporter_account= 'general_staff')
+            return render(request, "dashboard.html", {"username": request.user.username, "reports": report})
+        elif request.user.groups.all()[0].name == 'physicians':
+            report = Report.objects.filter(report_status='PP')
+            return render(request, "dashboard.html", {"username": request.user.username, "reports": report})
+        else:
+            reports = Report.objects.all()
+            return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
