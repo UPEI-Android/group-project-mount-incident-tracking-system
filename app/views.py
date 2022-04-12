@@ -29,6 +29,7 @@ def home(request):
             return render(request, 'index.html')
 
 
+@allowed_users(allowed_roles=["admins", "supervisors", "general_staff"])
 def form(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -97,10 +98,13 @@ def edit_report(request, report_id):
         admin_user = 'admins'
         general_staff = 'general_staff'
         supervisor = 'supervisors'
+        super_admins = 'super_admins'
         userr = User.objects.get(username=report_instance.reporter_account)
 
-        if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[0].name == general_staff and report_instance.report_status == 'PC') or (
-                request.user.groups.all()[0].name == admin_user) or ( request.user.groups.all()[0].name == supervisor):
+        if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[
+            0].name == general_staff and report_instance.report_status == 'PC') or (
+                request.user.groups.all()[0].name == admin_user) or (
+                request.user.groups.all()[0].name == supervisor) or (request.user.groups.all()[0].name == super_admins):
 
             if request.method == "POST":
                 if request.POST['submit'] == 'submit':
@@ -145,7 +149,7 @@ def edit_report(request, report_id):
         return redirect('home')
 
 
-@allowed_users(allowed_roles=["admins"])
+@allowed_users(allowed_roles=["super_admins", "admins"])
 def dashboard_export(request):
     if request.user.is_authenticated:
         reports = Report.objects.all()
@@ -154,7 +158,7 @@ def dashboard_export(request):
                       {"username": request.user.username, "reports": displayReports, "count": displayReports.count()})
 
 
-@allowed_users(allowed_roles=["admins"])
+@allowed_users(allowed_roles=["super_admins", "admins"])
 def mark_report_complete(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
@@ -192,7 +196,7 @@ def sign_off_report(request, report_id):
         return redirect('home')
 
 
-@allowed_users(allowed_roles=["admins"])
+@allowed_users(allowed_roles=["super_admins", "admins"])
 def export(request):
     if request.method == "GET":
         count = int(request.GET.get("report_count"))
@@ -290,7 +294,7 @@ def export(request):
 def dashboard(request):
     if request.user.is_authenticated:
         if request.user.groups.all()[0].name == 'general_staff':
-            report = Report.objects.filter(report_status='PC', reporter_account= 'general_staff')
+            report = Report.objects.filter(report_status='PC', reporter_account='general-staff')
             return render(request, "dashboard.html", {"username": request.user.username, "reports": report})
         elif request.user.groups.all()[0].name == 'physicians':
             report = Report.objects.filter(report_status='PP')
@@ -312,6 +316,7 @@ def logout_view(request):
     return redirect('home')
 
 
+@allowed_users(allowed_roles=["super_admins", "admins"])
 def delete_report(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.get(id=report_id)
