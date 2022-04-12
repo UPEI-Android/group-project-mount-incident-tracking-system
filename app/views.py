@@ -29,7 +29,7 @@ def home(request):
             return render(request, 'index.html')
 
 
-@allowed_users(allowed_roles=["admins", "supervisors", "general_staff"])
+@allowed_users(allowed_roles=["super_admins", "admins", "supervisors", "general_staff"])
 def form(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -95,16 +95,12 @@ def edit_report(request, report_id):
 
         report_instance = Report.objects.get(id=report_id)
         report = ReportForm(request.POST, instance=report_instance)
-        admin_user = 'admins'
         general_staff = 'general_staff'
-        supervisor = 'supervisors'
-        super_admins = 'super_admins'
         userr = User.objects.get(username=report_instance.reporter_account)
 
         if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[
             0].name == general_staff and report_instance.report_status == 'PC') or (
-                request.user.groups.all()[0].name == admin_user) or (
-                request.user.groups.all()[0].name == supervisor) or (request.user.groups.all()[0].name == super_admins):
+                report_instance.report_status != 'CO' and request.user.groups.all()[0] != general_staff):
 
             if request.method == "POST":
                 if request.POST['submit'] == 'submit':
