@@ -90,8 +90,7 @@ def read_report(request, report_id):
 
         if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[
             0].name == general_staff and report_instance.report_status == 'PC') or \
-                (report_instance.report_status != 'CO' and request.user.groups.all()[0].name != general_staff and
-                 request.user.groups.all()[0].name != 'physicians'):
+                (report_instance.report_status != 'CO' and request.user.groups.all()[0].name != general_staff):
 
             report = Report.objects.filter(id=report_id)[0]
             return render(request, "read_only_report.html",
