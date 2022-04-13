@@ -158,6 +158,9 @@ def edit_report(request, report_id):
                             return redirect('dashboard')
                         else:
                             messages.add_message(request, messages.WARNING, 'Error in Form')
+                            if request.user.groups.filter(name='physicians').exists():
+                                return render(request, "physician_edit_report.html",
+                                              {"username": request.user.username, "report": report})
                             return render(request, 'edit_report.html',
                                           {"username": request.user.username, "report": report})
                     elif request.POST['submit'] == "save":
@@ -169,11 +172,17 @@ def edit_report(request, report_id):
                             return redirect('read_report', report_id=report_id)
                         else:
                             messages.add_message(request, messages.WARNING, 'Error in Form')
+                            if request.user.groups.filter(name='physicians').exists():
+                                return render(request, "physician_edit_report.html",
+                                              {"username": request.user.username, "report": report})
                             return render(request, 'edit_report.html',
                                           {"username": request.user.username, "report": report})
 
                 else:
                     report = Report.objects.get(id=report_id)
+                    if request.user.groups.filter(name='physicians').exists():
+                        return render(request, "physician_edit_report.html",
+                                      {"username": request.user.username, "report": report})
                     return render(request, "edit_report.html", {"username": request.user.username, "report": report})
 
             else:
@@ -346,7 +355,7 @@ def dashboard(request):
 
         if request.user.groups.exists():
             if request.user.groups.all()[0].name == 'general_staff':
-                report = Report.objects.filter(report_status='PC', reporter_account='general-staff')
+                report = Report.objects.filter(report_status='PC', reporter_account=request.user.username)
                 return render(request, "dashboard.html", {"username": request.user.username, "reports": report})
             elif request.user.groups.all()[0].name == 'physicians':
                 report = Report.objects.filter(report_status='PP')
