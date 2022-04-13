@@ -8,6 +8,7 @@ from app.models import Report
 from app.forms import ReportForm
 from django import forms
 import csv
+from app.decorators import allowed_users
 
 
 # Create your views here.
@@ -33,6 +34,7 @@ def home(request):
             return render(request, 'index.html')
 
 
+@allowed_users(allowed_roles=["super_admins", "admins", "supervisors", "general_staff"])
 def form(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -45,7 +47,8 @@ def form(request):
                     # Create an instance of the database object to add the report status to
 
                     report_data = report.save(commit=False)
-                    # Check if the resident is in a Nursing Care community to indicate that a Physician must review the report
+                    # Check if the resident is in a Nursing Care community to indicate that a Physician must review
+                    # the report
                     if 'NC' in report_data.community:
                         report_data.report_status = 'PP'
                     else:
@@ -70,7 +73,7 @@ def form(request):
                     report_data.report_status = 'PC'
                     report_data.reporter_account = request.user.username
                     report_data.save()
-                    messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Submitted')
+                    messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Saved')
                     return render(request, 'input_form.html', {"username": request.user.username})
                 else:
                     messages.add_message(request, messages.WARNING, 'Error in Form')
@@ -93,8 +96,27 @@ def form(request):
 
 def read_report(request, report_id):
     if request.user.is_authenticated:
-        report = Report.objects.get(id=report_id)
-        return render(request, "read_only_report.html", {"username": request.user.username, "report_id": report_id, "report": report})
+        if request.user.groups.exists():
+
+            report_instance = Report.objects.get(id=report_id)
+            report = ReportForm(request.POST, instance=report_instance)
+            general_staff = 'general_staff'
+            userr = User.objects.get(username=report_instance.reporter_account)
+
+            if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[
+                0].name == general_staff and report_instance.report_status == 'PC') or \
+                    (report_instance.report_status != 'CO' and request.user.groups.all()[0].name != general_staff and
+                     request.user.groups.all()[0].name != 'physicians') or \
+                    (request.user.groups.all()[0].name == 'physicians' and report_instance.report_status == "PP"):
+
+                report = Report.objects.filter(id=report_id)[0]
+                return render(request, "read_only_report.html",
+                              {"username": request.user.username, "report_id": report_id, "report": report})
+            else:
+                return HttpResponse('You are not authorised')
+        else:
+            messages.add_message(request, messages.WARNING, 'No group assigned to user')
+            return render(request, 'index.html')
     else:
         request.session['previous_page'] = reverse("read_report", kwargs={'report_id': report_id})
         messages.error(request, f'User is not authenticated')
@@ -103,46 +125,62 @@ def read_report(request, report_id):
 
 def edit_report(request, report_id):
     if request.user.is_authenticated:
-        if request.method == "POST":
-            report_instance = Report.objects.get(id=report_id)
-            report = ReportForm(request.POST, instance=report_instance)
-            if request.POST['submit'] == 'submit':
-                report.full_clean()
-                report.validate()
-                if report.is_valid():
-                    # Create an instance of the database object to add the report status to
+        report_instance = Report.objects.get(id=report_id)
+        report = ReportForm(request.POST, instance=report_instance)
+        general_staff = 'general_staff'
+        userr = User.objects.get(username=report_instance.reporter_account)
 
-                    report_data = report.save(commit=False)
-                    # Check if the resident is in a Nursing Care community to indicate that a Physician must review the report
-                    if 'NC' in report_data.community:
-                        report_data.report_status = 'PP'
-                    else:
-                        report_data.report_status = 'SU'
-                    # Adds the reporting accounts username to the data and saves the data to the database
-                    report_data.save()
-                    messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Submitted')
-                    return redirect('read_report', report_id=report_id)
+        if request.user.groups.exists():
+            if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[
+                0].name == general_staff and report_instance.report_status == 'PC') or \
+                    (report_instance.report_status != 'CO' and request.user.groups.all()[0].name != general_staff and
+                     request.user.groups.all()[0].name != 'physicians') or \
+                    (request.user.groups.all()[0].name == 'physicians' and report_instance.report_status == "PP"):
+
+                if request.method == "POST":
+                    if request.POST['submit'] == 'submit':
+                        report.full_clean()
+                        report.validate()
+                        if report.is_valid():
+                            # Create an instance of the database object to add the report status to
+
+                            report_data = report.save(commit=False)
+                            # Check if the resident is in a Nursing Care community to indicate that a Physician must
+                            # review the report
+                            if 'NC' in report_data.community:
+                                report_data.report_status = 'PP'
+                            else:
+                                report_data.report_status = 'SU'
+                            # Adds the reporting accounts username to the data and saves the data to the database
+                            report_data.save()
+                            messages.add_message(request, messages.SUCCESS,
+                                                 'Incident Report Form Successfully Submitted')
+                            return redirect('dashboard')
+                        else:
+                            messages.add_message(request, messages.WARNING, 'Error in Form')
+                            return render(request, 'edit_report.html',
+                                          {"username": request.user.username, "report": report})
+                    elif request.POST['submit'] == "save":
+                        if report.is_valid():
+                            report_data = report.save(commit=False)
+                            report_data.report_status = 'PC'
+                            report_data.save()
+                            messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Saved')
+                            return redirect('read_report', report_id=report_id)
+                        else:
+                            messages.add_message(request, messages.WARNING, 'Error in Form')
+                            return render(request, 'edit_report.html',
+                                          {"username": request.user.username, "report": report})
+
                 else:
-                    messages.add_message(request, messages.WARNING, 'Error in Form')
-                    return render(request, 'edit_report.html', {"username": request.user.username, "report": report})
-            elif request.POST['submit'] == "save":
-                if report.is_valid():
-                    report_data = report.save(commit=False)
-                    report_data.report_status = 'PC'
-                    report_data.save()
-                    messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Saved')
-                    return redirect('read_report', report_id=report_id)
-                else:
-                    messages.add_message(request, messages.WARNING, 'Error in Form')
-                    return render(request, 'edit_report.html', {"username": request.user.username, "report": report})
+                    report = Report.objects.get(id=report_id)
+                    return render(request, "edit_report.html", {"username": request.user.username, "report": report})
+
+            else:
+                return HttpResponse('You are not authorised')
         else:
-            if 'report_data' in request.session:
-                report = ReportForm(request.session['report_data'])
-                report.full_clean()
-                del request.session['report_data']
-                return render(request, 'edit_report.html', {"username": request.user.username, "report": report.cleaned_data, "report_id": report_id})
-            report = Report.objects.get(id=report_id)
-            return render(request, "edit_report.html", {"username": request.user.username, "report": report})
+            messages.add_message(request, messages.WARNING, 'No group assigned to user')
+            return render(request, 'index.html')
     else:
         if request.method == 'POST':
             request.session['report_data'] = request.POST
@@ -151,6 +189,7 @@ def edit_report(request, report_id):
         return redirect('home')
 
 
+@allowed_users(allowed_roles=["super_admins", "admins"])
 def dashboard_export(request):
     if request.user.is_authenticated:
         reports = Report.objects.all()
@@ -163,6 +202,7 @@ def dashboard_export(request):
         return redirect('home')
 
 
+@allowed_users(allowed_roles=["super_admins", "admins"])
 def mark_report_complete(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
@@ -173,7 +213,8 @@ def mark_report_complete(request, report_id):
             messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Marked as Complete')
             return redirect('read_report', report_id=report_id)
         else:
-            messages.add_message(request, messages.WARNING, f'Incident Report Form Cannot be Marked as Complete, Report Status:  { report.report_status }')
+            messages.add_message(request, messages.WARNING,
+                                 f'Incident Report Form Cannot be Marked as Complete, Report Status:  {report.report_status}')
             return redirect('read_report', report_id=report_id)
     else:
         request.session['previous_page'] = reverse("read_report", kwargs={'report_id': report_id})
@@ -181,6 +222,7 @@ def mark_report_complete(request, report_id):
         return redirect('home')
 
 
+@allowed_users(allowed_roles=["physicians"])
 def sign_off_report(request, report_id):
     if request.user.is_authenticated:
         report = Report.objects.filter(id=report_id)[0]
@@ -191,7 +233,8 @@ def sign_off_report(request, report_id):
             messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Signed Off')
             return redirect('read_report', report_id=report_id)
         else:
-            messages.add_message(request, messages.WARNING, f'Incident Report Form Cannot be Signed Off, Report Status:  { report.report_status }')
+            messages.add_message(request, messages.WARNING,
+                                 f'Incident Report Form Cannot be Signed Off, Report Status:  {report.report_status}')
             return redirect('read_report', report_id=report_id)
     else:
         request.session['previous_page'] = reverse("read_report", kwargs={'report_id': report_id})
@@ -199,6 +242,7 @@ def sign_off_report(request, report_id):
         return redirect('home')
 
 
+@allowed_users(allowed_roles=["super_admins", "admins"])
 def export(request):
     if request.method == "GET" & request.user.is_authenticated:
         count = int(request.GET.get("report_count"))
@@ -299,8 +343,20 @@ def export(request):
 
 def dashboard(request):
     if request.user.is_authenticated:
-        reports = Report.objects.all()
-        return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
+
+        if request.user.groups.exists():
+            if request.user.groups.all()[0].name == 'general_staff':
+                report = Report.objects.filter(report_status='PC', reporter_account='general-staff')
+                return render(request, "dashboard.html", {"username": request.user.username, "reports": report})
+            elif request.user.groups.all()[0].name == 'physicians':
+                report = Report.objects.filter(report_status='PP')
+                return render(request, "dashboard.html", {"username": request.user.username, "reports": report})
+            else:
+                reports = Report.objects.all()
+                return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
+        else:
+            messages.add_message(request, messages.WARNING, 'No group assigned to user')
+            return render(request, 'index.html')
     else:
         request.session['previous_page'] = reverse("dashboard")
         messages.error(request, f'User is not authenticated')
@@ -314,3 +370,15 @@ def logout_view(request):
     else:
         messages.add_message(request, messages.WARNING, 'No User Authenticated')
     return redirect('home')
+
+
+@allowed_users(allowed_roles=["super_admins", "admins"])
+def delete_report(request, report_id):
+    if request.user.is_authenticated:
+        report = Report.objects.get(id=report_id)
+        report.delete()
+        messages.success(request, "Report Deleted successfully!")
+        return redirect('dashboard')
+    else:
+        messages.error(request, f'User is not authenticated')
+        return redirect('home')
