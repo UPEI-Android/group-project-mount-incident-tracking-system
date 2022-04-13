@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.urls import reverse
 from app.models import Report
 from app.forms import ReportForm
 from django import forms
@@ -17,6 +18,10 @@ def home(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
+            if "previous_page" in request.session:
+                url = request.session['previous_page']
+                del request.session['previous_page']
+                return redirect(url)
             return redirect('dashboard')
         else:
             messages.add_message(request, messages.WARNING, 'Invalid Credentials')
@@ -71,17 +76,27 @@ def form(request):
                     messages.add_message(request, messages.WARNING, 'Error in Form')
                     return render(request, 'input_form.html', {"username": request.user.username})
 
+        if 'report_data' in request.session:
+            report = ReportForm(request.session['report_data'])
+            report.full_clean()
+            print(request.session['report_data']['staff'])
+            del request.session['report_data']
+            return render(request, 'input_form.html', {"username": request.user.username, "report": report})
         return render(request, 'input_form.html', {"username": request.user.username})
     else:
+        request.session['previous_page'] = reverse("form")
+        if request.method == 'POST':
+            request.session['report_data'] = request.POST
         messages.error(request, f'User is not authenticated')
         return redirect('home')
 
 
 def read_report(request, report_id):
     if request.user.is_authenticated:
-        report = Report.objects.filter(id=report_id)[0]
-        return render(request, "read_only_report.html", {"username": request.user.username,"report_id": report_id, "report": report})
+        report = Report.objects.get(id=report_id)
+        return render(request, "read_only_report.html", {"username": request.user.username, "report_id": report_id, "report": report})
     else:
+        request.session['previous_page'] = reverse("read_report", kwargs={'report_id': report_id})
         messages.error(request, f'User is not authenticated')
         return redirect('home')
 
@@ -109,7 +124,7 @@ def edit_report(request, report_id):
                     return redirect('read_report', report_id=report_id)
                 else:
                     messages.add_message(request, messages.WARNING, 'Error in Form')
-                    return render(request, 'input_form.html', {"username": request.user.username, "report": report})
+                    return render(request, 'edit_report.html', {"username": request.user.username, "report": report})
             elif request.POST['submit'] == "save":
                 if report.is_valid():
                     report_data = report.save(commit=False)
@@ -119,11 +134,19 @@ def edit_report(request, report_id):
                     return redirect('read_report', report_id=report_id)
                 else:
                     messages.add_message(request, messages.WARNING, 'Error in Form')
-                    return render(request, 'input_form.html', {"username": request.user.username, "report": report})
+                    return render(request, 'edit_report.html', {"username": request.user.username, "report": report})
         else:
-            report = Report.objects.filter(id=report_id)[0]
+            if 'report_data' in request.session:
+                report = ReportForm(request.session['report_data'])
+                report.full_clean()
+                del request.session['report_data']
+                return render(request, 'edit_report.html', {"username": request.user.username, "report": report.cleaned_data, "report_id": report_id})
+            report = Report.objects.get(id=report_id)
             return render(request, "edit_report.html", {"username": request.user.username, "report": report})
     else:
+        if request.method == 'POST':
+            request.session['report_data'] = request.POST
+        request.session['previous_page'] = reverse("edit_report", kwargs={'report_id': report_id})
         messages.error(request, f'User is not authenticated')
         return redirect('home')
 
@@ -134,6 +157,10 @@ def dashboard_export(request):
         displayReports = reports.reverse()[:50]
         return render(request, "dashboard-export.html",
                       {"username": request.user.username, "reports": displayReports, "count": displayReports.count()})
+    else:
+        request.session['previous_page'] = reverse("form")
+        messages.error(request, f'User is not authenticated')
+        return redirect('home')
 
 
 def mark_report_complete(request, report_id):
@@ -149,6 +176,7 @@ def mark_report_complete(request, report_id):
             messages.add_message(request, messages.WARNING, f'Incident Report Form Cannot be Marked as Complete, Report Status:  { report.report_status }')
             return redirect('read_report', report_id=report_id)
     else:
+        request.session['previous_page'] = reverse("read_report", kwargs={'report_id': report_id})
         messages.error(request, f'User is not authenticated')
         return redirect('home')
 
@@ -166,12 +194,13 @@ def sign_off_report(request, report_id):
             messages.add_message(request, messages.WARNING, f'Incident Report Form Cannot be Signed Off, Report Status:  { report.report_status }')
             return redirect('read_report', report_id=report_id)
     else:
+        request.session['previous_page'] = reverse("read_report", kwargs={'report_id': report_id})
         messages.error(request, f'User is not authenticated')
         return redirect('home')
 
 
 def export(request):
-    if request.method == "GET":
+    if request.method == "GET" & request.user.is_authenticated:
         count = int(request.GET.get("report_count"))
         response = HttpResponse(
             content_type='text/csv',
@@ -262,6 +291,10 @@ def export(request):
             # writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
 
         return response
+    else:
+        request.session['previous_page'] = reverse("dashboard")
+        messages.error(request, f'User is not authenticated')
+        return redirect('home')
 
 
 def dashboard(request):
@@ -269,6 +302,7 @@ def dashboard(request):
         reports = Report.objects.all()
         return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
     else:
+        request.session['previous_page'] = reverse("dashboard")
         messages.error(request, f'User is not authenticated')
         return redirect('home')
 
