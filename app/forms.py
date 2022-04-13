@@ -24,10 +24,6 @@ class ReportForm(forms.ModelForm):
             self.add_error('writer_position',
                            forms.ValidationError('Position of Writer is required', code='No Position of Writer'))
 
-        if form_data.get('incident_location') is None:
-            self.add_error('incident_location',
-                           forms.ValidationError('Incident Location is required', code='No Incident Location'))
-
         if form_data.get('date_of_incident') is None:
             self.add_error('date_of_incident',
                            forms.ValidationError('Date of Incident is required', code='No Date of Incident'))
@@ -127,7 +123,7 @@ class ReportForm(forms.ModelForm):
                                                  code='No Condition Description'))
 
         # Check if the family of the resident involved has been notified correctly
-        if form_data.get('family_notified') == 'True':
+        if form_data.get('family_notified', False):
             if form_data.get('family_name') == '':
                 self.add_error('family_name', forms.ValidationError('No Family Notification Name Provided',
                                                                     code='No Family Name'))
@@ -136,7 +132,7 @@ class ReportForm(forms.ModelForm):
                                                                                  code='No Family Date'))
 
         # Check if a physician has been notified correctly
-        if form_data.get('physician_notified') == 'True':
+        if form_data.get('physician_notified', False):
             if form_data.get('physician_name') == '':
                 self.add_error('physician_name', forms.ValidationError('No Physician Notification Name Provided',
                                                                        code='No Physician Name'))
@@ -145,7 +141,7 @@ class ReportForm(forms.ModelForm):
                                forms.ValidationError('No Physician Notification Date Provided', code='No Physician Date'))
 
         # Check if a supervisor has been notified correctly
-        if form_data.get('supervisor_notified') == 'True':
+        if form_data.get('supervisor_notified', False):
             if form_data.get('supervisor_name') == '':
                 self.add_error('supervisor_name', forms.ValidationError('No Supervisor Notification Name Provided',
                                                                         code='No Supervisor Name'))
