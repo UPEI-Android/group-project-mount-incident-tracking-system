@@ -83,22 +83,29 @@ def form(request):
 def read_report(request, report_id):
     if request.user.is_authenticated:
 
-        report_instance = Report.objects.get(id=report_id)
-        report = ReportForm(request.POST, instance=report_instance)
-        general_staff = 'general_staff'
-        userr = User.objects.get(username=report_instance.reporter_account)
+        if request.user.groups.exists():
 
-        if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[
-            0].name == general_staff and report_instance.report_status == 'PC') or \
-                (report_instance.report_status != 'CO' and request.user.groups.all()[0].name != general_staff and
-                 request.user.groups.all()[0].name != 'physicians') or \
-                (request.user.groups.all()[0].name == 'physicians' and report_instance.report_status == "PP"):
+            report_instance = Report.objects.get(id=report_id)
+            report = ReportForm(request.POST, instance=report_instance)
+            general_staff = 'general_staff'
+            userr = User.objects.get(username=report_instance.reporter_account)
 
-            report = Report.objects.filter(id=report_id)[0]
-            return render(request, "read_only_report.html",
-                          {"username": request.user.username, "report_id": report_id, "report": report})
+            if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[
+                0].name == general_staff and report_instance.report_status == 'PC') or \
+                    (report_instance.report_status != 'CO' and request.user.groups.all()[0].name != general_staff and
+                     request.user.groups.all()[0].name != 'physicians') or \
+                    (request.user.groups.all()[0].name == 'physicians' and report_instance.report_status == "PP"):
+
+                report = Report.objects.filter(id=report_id)[0]
+                return render(request, "read_only_report.html",
+                              {"username": request.user.username, "report_id": report_id, "report": report})
+            else:
+                return HttpResponse('You are not authorised')
+
         else:
-            return HttpResponse('You are not authorised')
+            messages.add_message(request, messages.WARNING, 'No group assigned to user')
+            return render(request, 'index.html')
+
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
