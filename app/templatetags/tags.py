@@ -18,7 +18,7 @@ def index_finder(reports, report):
 
 
 @register.filter(name="location_options")
-def location_options(value):
+def location_options(value, filter_selection):
     temp = []
     s = ""
     options = ""
@@ -33,7 +33,7 @@ def location_options(value):
 
 
 @register.filter(name="care_options")
-def care_options(value):
+def care_options(value, filter_selection):
     temp = []
     s = ""
     options = ""
@@ -47,7 +47,7 @@ def care_options(value):
 
 
 @register.filter(name="report_status")
-def report_status(value):
+def report_status(value, filter_selection):
     temp = []
     s = ""
     options = ""
@@ -61,7 +61,7 @@ def report_status(value):
 
 
 @register.filter(name="incident_options")
-def incident_options(value):
+def incident_options(value, filter_selection):
     temp = []
     s = ""
     for x in value:
@@ -100,7 +100,17 @@ def incident_options(value):
             break
     options = ""
     for x in temp:
-        s = s + ('\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" value="' + str(x) + '" id="formCheck-8">\n<label class="form-check-label" for="formCheck-8">\n' + str(x) + '\n</label>\n</div>\n')
+        s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name ="' + str(x) + '"value="' + str(x) + '" id="formCheck-8"'
+        if x in filter_selection:
+            s = s + 'checked'
+        s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + str(x) + '\n</label>\n</div>\n'
         options = options + str(x) + "?"
     s = s + '<input type="hidden" name="incident_options_list" value="' + options[:-1] + '"></input>\n'
     return mark_safe(s)
+
+
+@register.filter(name="display_all_toggle")
+def display_all_toggle(filter_selection):
+    return '<input class="form-check-input" type="checkbox" id="formCheck-3" name="display_all_toggle" ' \
+           'style="text-align: left;border: 2px solid rgb(0, 0, 0);padding: 7px;">\n<label class="form-check-label" ' \
+           'for="formCheck-3" style="font-size: 18px;">&nbsp;Display All</label>\n</input> '

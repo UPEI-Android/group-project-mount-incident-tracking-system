@@ -266,7 +266,8 @@ def export(request):
 def dashboard(request):
     if request.user.is_authenticated:
         reports = Report.objects.all()
-        return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
+        filter_selection = []
+        return render(request, "dashboard.html", {"username": request.user.username, "reports": reports, "filter_selection": filter_selection})
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
@@ -283,22 +284,39 @@ def logout_view(request):
 
 def dashboard_functionality(request):
     if request.method == "GET":
-        return dashboard_filtering(request)
+        if request.GET.get('submit') == "apply_filters":
+            return dashboard_filtering(request)
     reports = Report.objects.all()
-    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50]})
+    filter_selection = []
+    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50], "filter_selection": filter_selection})
 
 
 def dashboard_filtering(request):
-    reports_to_display = apply_filters(request)
+    # Get dropdown options
+    location_options = request.GET.get('location_options_list').split('?')
+    care_options = request.GET.get('care_options_list').split('?')
+    status_options = request.GET.get('status_options_list').split('?')
+    incident_options = request.GET.get('incident_options_list').split('?')
+    print("incident options: " + str(len(incident_options)))
+    # Get selected options
+    location_selection = get_filter_selection(request, location_options)
+    care_selection = get_filter_selection(request, care_options)
+    status_selection = get_filter_selection(request, status_options)
+    incident_selection = get_filter_selection(request, incident_options)
+    print("incident selection: " + str(len(incident_selection)))
+    reports_to_display = apply_filters(request, location_selection, care_selection, status_selection, incident_selection)
+    filter_selection = [request.GET.get('residents_name'), [request.GET.get('date_from'), request.GET.get('date_to')], request.GET.get('reporter_name'), location_selection, care_selection, incident_selection, status_selection, request.GET.get('display_all_toggle')]
     if request.GET.get('display_all_toggle') is not None:
         return render(request, "dashboard.html",
-                      {"username": request.user.username, "reports": reports_to_display})
-    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display[:50]})
+                      {"username": request.user.username, "reports": reports_to_display, "filter_selection": filter_selection})
+    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display[:50], "filter_selection": filter_selection})
 
 
 def get_filter_selection(request, options):
     temp = []
+    print(options[0])
     for x in options:
+        print(request.GET.get(x))
         if request.GET.get(x) is not None:
             temp.append(x)
     #if len(temp) == 0:
@@ -306,21 +324,10 @@ def get_filter_selection(request, options):
     return temp
 
 
-def apply_filters(request):
+def apply_filters(request, location_selection, care_selection, status_selection, incident_selection):
     reports = Report.objects.all()
     results = []
 
-    # Get dropdown options
-    location_options = request.GET.get('location_options_list').split('?')
-    care_options = request.GET.get('care_options_list').split('?')
-    status_options = request.GET.get('status_options_list').split('?')
-    incident_options = request.GET.get('incident_options_list').split('?')
-
-    # Get selected options
-    location_selection = get_filter_selection(request, location_options)
-    care_selection = get_filter_selection(request, care_options)
-    status_selection = get_filter_selection(request, status_options)
-    incident_selection = get_filter_selection(request, incident_options)
     for x in reports:
         if resident_filter(x, request.GET.get('residents_name')) and reporter_filter(x, request.GET.get(
                 'reporter_name')) and location_filter(x, location_selection) and care_filter(x, care_selection) and status_filter(x, status_selection) and incident_filter(x, incident_selection) and date_filter(x, request):
@@ -348,6 +355,7 @@ def care_filter(report, care_list):
 
 def incident_filter(report, incident_list):
     if len(incident_list) == 0:
+        print("empty incident list")
         return True
     if report.near_miss:
         for x in incident_list:

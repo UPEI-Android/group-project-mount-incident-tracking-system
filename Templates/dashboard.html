@@ -58,28 +58,28 @@
                             <div class="col-12 col-sm-6 col-xl-2" style="padding: 5px 10px;">
                                 <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Location</button>
                                     <div class="dropdown-menu">
-                                        {{ reports|location_options }}
+                                        {{ reports|location_options:filter_selection }}
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 col-xl-2" style="padding: 5px 10px;">
                                 <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Type of Care</button>
                                     <div class="dropdown-menu">
-                                        {{ reports|care_options }}
+                                        {{ reports|care_options:filter_selection }}
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 col-xl-2" style="padding: 5px 10px;">
                                 <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Incident Type</button>
                                     <div class="dropdown-menu">
-                                        {{ reports|incident_options }}
+                                        {{ reports|incident_options:filter_selection }}
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 col-xl-2" style="padding: 5px 10px;">
                                 <div class="dropdown"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="border: 2px solid var(--bs-dark);width: 100%;font-size: 18px;">Report Status</button>
                                     <div class="dropdown-menu">
-                                        {{ reports|report_status }}
+                                        {{ reports|report_status:filter_selection }}
                                     </div>
                                 </div>
                             </div>
