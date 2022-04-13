@@ -66,9 +66,38 @@
                         </div>
                         <p>Staff:</p><input class="form-control" type="text" placeholder="Staff" name="staff" value="{{ report.staff }}" disabled>
                         <p>Other(s): (visitor, guest, etc.)</p><textarea class="form-control" name="others" placeholder="Others" disabled>{{ report.others }}</textarea>
-                        <p>Name of Writer:</p><input class="form-control" type="text" name="name_of_writer" placeholder="Name" value="{{ report.name_of_writer }}" disabled>
+                        <p>Name of Writer:</p>
+                            <div class="row">
+                                <div class="col-4">
+                                    <input class="form-control" type="text" name="writer_first_name" placeholder="First Name" value="{{ report.writer_first_name }}" disabled>
+                                </div>
+                                <div class="col-4">
+                                    <input class="form-control" type="text" name="writer_last_name" placeholder="Last Name" value="{{ report.writer_last_name }}" disabled>
+                                </div>
+                                <div class="col-4">
+                                    <input class="form-control" type="text" name="writer_position" placeholder="Position" value="{{ report.writer_position }}" disabled>
+                                </div>
+                            </div>
                         <p>Date and Time of Incident:</p><input class="form-control" type="datetime-local" name="date_of_incident" value="{{ report.date_of_incident|date:"Y-m-d\TH:i" }}" disabled>
-                        <p>Incident Location:</p><input class="form-control" type="text" name="incident_location" placeholder="Location" value="{{ report.incident_location }}" disabled>
+                        <p>Incident Location:</p>
+                            <div class="row">
+                                <div class="col-6 col-md-3 col-lg-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" name="incident_location" value="BA" {% if report.incident_location == "BA" %} checked {% endif %} disabled><label class="form-check-label">Bathroom</label></div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" name="incident_location" value="BE" {% if report.incident_location == "BE" %} checked {% endif %} disabled><label class="form-check-label">Bedroom</label></div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" name="incident_location" value="HA" {% if report.incident_location == "HA" %} checked {% endif %} disabled><label class="form-check-label">Hallway</label></div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" name="incident_location" value="ST" {% if report.incident_location == "ST" %} checked {% endif %} disabled><label class="form-check-label">Stairway</label></div>
+                                </div>
+                                <div class="col-12 col-lg-3">
+                                    <div class="form-check"><input class="form-check-input" type="radio" name="incident_location" value="OT" {% if report.incident_location == "OT" %} checked {% endif %} disabled><label class="form-check-label">Other (Specify):</label></div>
+                                </div>
+                                <div class="col-12"><textarea class="form-control" name="incident_location_other" disabled>{{ report.incident_location_other }}</textarea></div>
+                            </div>
                     </div>
                     <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 20px;margin-top: 15px;margin-bottom: 15px;">
                         <div class="row">
@@ -200,7 +229,7 @@
                             <div class="col-4 col-sm-2">
                                 <p class="text-end">BP</p>
                             </div>
-                            <div class="col-8 col-sm-4"><input class="form-control" type="number" name="BP" value="{{ report.BP }}" disabled></div>
+                            <div class="col-8 col-sm-4"><input class="form-control" type="text" name="BP" value="{{ report.BP }}" disabled></div>
                             <div class="col-4 col-sm-2">
                                 <p class="text-end">Sp02</p>
                             </div>
@@ -211,21 +240,7 @@
                             <div class="col-8 col-sm-4"><input class="form-control" type="number" name="blood_sugar" value="{{ report.blood_sugar }}" disabled></div>
                             <div class="col-12">
                                 <p>Neurovital Signs:</p>
-                            </div>
-                            <div class="col-4 col-lg-2">
-                                <p class="text-end">Pupil Size L</p>
-                            </div>
-                            <div class="col-8 col-lg-2"><input class="form-control" type="number" name="pupil_size_L" value="{{ report.pupil_size_L }}" disabled></div>
-                            <div class="col-4 col-lg-2">
-                                <p class="text-end">Pupil Size R</p>
-                            </div>
-                            <div class="col-8 col-lg-2"><input class="form-control" type="number" name="pupil_size_R" value="{{ report.pupil_size_R }}" disabled></div>
-                            <div class="col-4 col-lg-2">
-                                <p class="text-end">CS</p>
-                            </div>
-                            <div class="col-8 col-lg-2"><input class="form-control" type="number" name="CS"  value="{{ report.CS }}" disabled></div>
-                            <div class="col-12">
-                                <p class="text-start">(Complete NVS Record)</p>
+                                <div class="form-check"><input class="form-check-input" type="checkbox" name="NVS_report_completed" value="True" {% if report.NVS_report_completed == True %} checked {% endif %} disabled><label class="form-check-label">NVS Record Completed</label></div>
                             </div>
                         </div>
                     </div>
@@ -242,7 +257,7 @@
                                 <p style="margin-bottom: 5px;">Date &amp; Time:</p><input class="form-control" type="datetime-local" name="family_notification_date" value="{{ report.family_notification_date|date:"Y-m-d\TH:i" }}" disabled>
                             </div>
                             <div class="col-12 col-md-6 col-lg-4">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-41" name="physician_notified" value="True" {% if report.physician_notified == True %} checked {% endif %} disabled><label class="form-check-label" for="formCheck-41">Physician Notified</label></div>
+                                <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-41" name="physician_notified" value="True" {% if report.physician_notified == True %} checked {% endif %} disabled><label class="form-check-label" for="formCheck-41">Physician or Provider Notified</label></div>
                             </div>
                             <div class="col-12 col-md-6 col-lg-8">
                                 <p style="margin-bottom: 5px;">Name:</p><input class="form-control" type="text" name="physician_name" value="{{ report.physician_name }}" disabled>
@@ -260,7 +275,7 @@
                     <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
                         <div class="row">
                             <div class="col-12">
-                                <p>Action or Treatment prescribed by the physician/supervisor:</p>
+                                <p>Action or Treatment prescribed by the physician/provider/supervisor:</p>
                             </div>
                             <div class="col-12"><textarea class="form-control" name="action_treatment_prescribed" disabled>{{ report.action_treatment_prescribed }}</textarea></div>
                             <div class="col-12">
@@ -324,32 +339,35 @@
                         </div>
                     </div>
                     <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
-                        <div class="col">
-                            <p style="color: var(--bs-red);font-style: italic;text-decoration:  underline;">SIGNATURES HERE (FORMAT/PROTOCOL TO BE DETERMINED)</p>
-                        </div>
                         <div class="row">
-                                <p>Physician Comments:</p>
+                                <p>Physician or Provider Comments:</p>
                             </div>
                             <div class="col-12"><textarea class="form-control form-control-lg" name="physician_comments" disabled>{{ report.physician_comments }}</textarea></div>
                         </div>
                     </div>
                     <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 40px;margin-top: 15px;margin-bottom: 15px;">
                         <div class="row" style="margin-top: 20px">
+                            {% if report.report_status is not "CO" %}
                             <div class="col-4">
                                 <a href="/edit_report/{{ report.id }}">
                                     <button class="btn btn-primary btn-lg" role="button" style="font-family: ABeeZee, sans-serif;">Edit</button>
                                 </a>
                             </div>
+                            {% endif %}
+                            {% if report.report_status is "SU" %}
                             <div class="col-4">
                                 <a href="/mark_complete/{{ report.id }}">
                                     <button class="btn btn-primary btn-lg" role="button" style="font-family: ABeeZee, sans-serif;">Mark as Complete</button>
                                 </a>
                             </div>
+                            {% endif %}
+                            {% if report.report_status is "PP" %}
                             <div class="col-4">
                                 <a href="/sign_off/{{ report.id }}">
                                     <button class="btn btn-primary btn-lg" role="button" style="font-family: ABeeZee, sans-serif;">Sign Off on Report</button>
                                 </a>
                             </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
