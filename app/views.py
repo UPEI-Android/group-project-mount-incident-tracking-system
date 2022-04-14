@@ -1,3 +1,4 @@
+import pytz
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
@@ -8,6 +9,7 @@ from app.models import Report
 from app.forms import ReportForm
 from django import forms
 import csv
+from datetime import datetime
 from app.decorators import allowed_users
 
 
@@ -273,54 +275,51 @@ def export(request):
              'Reporter Account', 'Completion Account', 'Physician Account', 'Report Status'])
 
         for i in range(count):
-            print("I Value: " + str(i))
             report_id = request.GET.get("reportID" + str(i))
             # report_id = int(report_id)
-            print("reportID:" + str(report_id) + " Count: " + str(count))
-            if (report_id != None):
+            if report_id != None:
                 report = Report.objects.filter(id=report_id)[0]
-                print("Report Loaded From DataBase: " + str(report.id))
                 medication_error_reason = ""
-                if (report.medication_error):
-                    if (report.incorrect_resident):
+                if report.medication_error:
+                    if report.incorrect_resident:
                         medication_error_reason += "Incorrect Resident.\n"
-                    if (report.incorrect_route):
+                    if report.incorrect_route:
                         medication_error_reason += "Incorrect Route.\n"
-                    if (report.incorrect_dose):
+                    if report.incorrect_dose:
                         medication_error_reason += "Incorrect Dose.\n"
-                    if (report.incorrect_label):
+                    if report.incorrect_label:
                         medication_error_reason += "Incorrect Label.\n"
-                    if (report.incorrect_name):
+                    if report.incorrect_name:
                         medication_error_reason += "Incorrect Name.\n"
-                    if (report.incorrect_time):
+                    if report.incorrect_time:
                         medication_error_reason += "Incorrect Time.\n"
-                    if (report.incorrect_drug):
+                    if report.incorrect_drug:
                         medication_error_reason += "Incorrect Drug.\n"
-                    if (report.extra_dose_given):
+                    if report.extra_dose_given:
                         medication_error_reason += "Extra Dose Given.\n"
-                    if (report.dose_omitted):
+                    if report.dose_omitted:
                         medication_error_reason += "Dose Omitted.\n"
-                    if (report.pharmacy_error):
+                    if report.pharmacy_error:
                         medication_error_reason += "Pharmacy Error.\n"
-                    if (report.other_medication_error):
+                    if report.other_medication_error:
                         medication_error_reason += "Other Medication Error.\n"
 
                 type_of_incident = ""
-                if (report.near_miss):
+                if report.near_miss:
                     type_of_incident += "Near Miss\n"
-                if (report.fall):
+                if report.fall:
                     type_of_incident += "Fall\n"
-                if (report.medication_error):
+                if report.medication_error:
                     type_of_incident += "Medication Error\n"
-                if (report.treatment_error):
+                if report.treatment_error:
                     type_of_incident += "Treatment Error\n"
-                if (report.loss_of_property):
+                if report.loss_of_property:
                     type_of_incident += "Loss of Property\n"
-                if (report.death):
+                if report.death:
                     type_of_incident += "Death\n"
-                if (report.other_type_of_incident):
+                if report.other_type_of_incident:
                     type_of_incident += "Other Type of Incident\n"
-                if (report.staff_injury):
+                if report.staff_injury:
                     type_of_incident += "Staff Injury\n"
 
                 writer.writerow(
@@ -340,9 +339,6 @@ def export(request):
                      report.reporter_account,
                      report.completing_account, report.physician_review_account, report.report_status])
 
-            # for key, value in this_form.cleaned_data.iteritems():
-            # writer.writerow([value, 'A', 'B', 'C', '"Testing"', "Here's a quote"])
-
         return response
     else:
         request.session['previous_page'] = reverse("dashboard")
@@ -352,17 +348,18 @@ def export(request):
 
 def dashboard(request):
     if request.user.is_authenticated:
-
         if request.user.groups.exists():
             if request.user.groups.all()[0].name == 'general_staff':
                 report = Report.objects.filter(report_status='PC', reporter_account=request.user.username)
-                return render(request, "dashboard.html", {"username": request.user.username, "reports": report})
+                filter_selection = [[], [], [], [], [], [], [], []]
+                return render(request, "dashboard.html", {"username": request.user.username, "reports": reports, "filter_selection": filter_selection})
             elif request.user.groups.all()[0].name == 'physicians':
                 report = Report.objects.filter(report_status='PP')
-                return render(request, "dashboard.html", {"username": request.user.username, "reports": report})
+                filter_selection = [[], [], [], [], [], [], [], []]
+                return render(request, "dashboard.html", {"username": request.user.username, "reports": reports, "filter_selection": filter_selection})
             else:
-                reports = Report.objects.all()
-                return render(request, "dashboard.html", {"username": request.user.username, "reports": reports})
+                reports = Report.objects.all()filter_selection = [[], [], [], [], [], [], [], []]
+                 return render(request, "dashboard.html", {"username": request.user.username, "reports": reports, "filter_selection": filter_selection})
         else:
             messages.add_message(request, messages.WARNING, 'No group assigned to user')
             return render(request, 'index.html')
@@ -381,6 +378,165 @@ def logout_view(request):
     return redirect('home')
 
 
+def dashboard_functionality(request):
+    if request.method == "GET":
+        if request.GET.get('submit') == "apply_filters":
+            return dashboard_filtering(request)
+    reports = Report.objects.all()
+    filter_selection = [[], [], [], [], [], [], [], []]
+    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50], "filter_selection": filter_selection})
+
+
+def dashboard_filtering(request):
+    # Get dropdown options
+    location_options = request.GET.get('location_options_list').split('?')
+    care_options = request.GET.get('care_options_list').split('?')
+    status_options = request.GET.get('status_options_list').split('?')
+    incident_options = request.GET.get('incident_options_list').split('?')
+    # Get selected options
+    location_selection = get_filter_selection(request, location_options)
+    care_selection = get_filter_selection(request, care_options)
+    status_selection = get_filter_selection(request, status_options)
+    incident_selection = get_filter_selection(request, incident_options)
+    reports_to_display = apply_filters(request, location_selection, care_selection, status_selection, incident_selection)
+    print(str(len(status_selection)))
+    filter_selection = [request.GET.get('residents_name'), [request.GET.get('date_from'), request.GET.get('date_to')], request.GET.get('reporter_name'), location_selection, care_selection, incident_selection, status_selection, request.GET.get('display_all_toggle')]
+    print("filter_selection: " + str(len(filter_selection)))
+    if request.GET.get('display_all_toggle') is not None:
+        return render(request, "dashboard.html",
+                      {"username": request.user.username, "reports": reports_to_display, "filter_selection": filter_selection})
+    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display[:50], "filter_selection": filter_selection})
+
+
+def get_filter_selection(request, options):
+    temp = []
+    print(options[0])
+    for x in options:
+        print(request.GET.get(x))
+        if request.GET.get(x) is not None:
+            temp.append(x)
+    #if len(temp) == 0:
+    #    return options
+    return temp
+
+
+def apply_filters(request, location_selection, care_selection, status_selection, incident_selection):
+    reports = Report.objects.all()
+    results = []
+
+    for x in reports:
+        if resident_filter(x, request.GET.get('residents_name')) and reporter_filter(x, request.GET.get(
+                'reporter_name')) and location_filter(x, location_selection) and care_filter(x, care_selection) and status_filter(x, status_selection) and incident_filter(x, incident_selection) and date_filter(x, request):
+            results.append(x)
+    return results
+
+
+def location_filter(report, location_list):
+    if len(location_list) == 0:
+        return True
+    for x in location_list:
+        if x == report.incident_location:
+            return True
+    return False
+
+
+def care_filter(report, care_list):
+    if len(care_list) == 0:
+        return True
+    for x in care_list:
+        if x == report.community:
+            return True
+    return False
+
+
+def incident_filter(report, incident_list):
+    if len(incident_list) == 0:
+        print("empty incident list")
+        return True
+    if report.near_miss:
+        for x in incident_list:
+            if x == "Near Miss":
+                return True
+    if report.fall:
+        for x in incident_list:
+            if x == "Fall":
+                return True
+    if report.medication_error:
+        for x in incident_list:
+            if x == "Medication Error":
+                return True
+    if report.treatment_error:
+        for x in incident_list:
+            if x == "Treatment Error":
+                return True
+    if report.death:
+        for x in incident_list:
+            if x == "Death":
+                return True
+    if report.other_type_of_incident:
+        for x in incident_list:
+            if x == "Other":
+                return True
+    if report.staff_injury:
+        for x in incident_list:
+            if x == "Staff Injury":
+                return True
+
+    return False
+
+
+def status_filter(report, status_list):
+    if len(status_list) == 0:
+        return True
+    for x in status_list:
+        if x == report.report_status:
+            return True
+    return False
+
+
+def reporter_filter(report, query):
+    if query == "":  # if this field hasn't been used just ignore it
+        return True
+    if report.name_of_writer.lower() == query.lower():
+        return True
+    if query.lower() in report.name_of_writer.lower():
+        return True
+    return False
+
+
+def resident_filter(report, query):
+    if query == "":  # if this field hasn't been used just ignore it
+        return True
+    if report.residents.lower() == query.lower():
+        return True
+    if query.lower() in report.residents.lower():
+        return True
+    return False
+
+
+def date_filter(report, request):
+    from_bool = False
+    to_bool = False
+
+    if request.GET.get('date_from') != "" and report.date_of_incident is not None:
+        date_from = datetime.strptime(request.GET.get('date_from'), '%Y-%m-%d').replace(tzinfo=pytz.timezone('America/Halifax'))
+
+        if report.date_of_incident > date_from:
+            from_bool = True    #if date is after "from" date
+    else:
+        from_bool = True    #if no "from" date is selected then all are true
+
+    if request.GET.get('date_to') != "":
+        if report.date_of_incident is not None:
+            date_to = datetime.strptime(request.GET.get('date_to'), '%Y-%m-%d').replace(tzinfo=pytz.timezone('America/Halifax'))
+            if report.date_of_incident < date_to:
+                to_bool = True  # if date is after "from" date
+    else:
+        to_bool = True  # if no "from" date is selected then all are true
+
+    return from_bool and to_bool
+
+
 @allowed_users(allowed_roles=["super_admins", "admins"])
 def delete_report(request, report_id):
     if request.user.is_authenticated:
@@ -391,3 +547,4 @@ def delete_report(request, report_id):
     else:
         messages.error(request, f'User is not authenticated')
         return redirect('home')
+
