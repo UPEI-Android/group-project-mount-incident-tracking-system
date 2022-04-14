@@ -107,7 +107,7 @@ def read_report(request, report_id):
 
             if (userr.groups.all()[0].name == general_staff and request.user.groups.all()[
                 0].name == general_staff and report_instance.report_status == 'PC') or \
-                    (report_instance.report_status != 'CO' and request.user.groups.all()[0].name != general_staff and
+                    (request.user.groups.all()[0].name != general_staff and
                      request.user.groups.all()[0].name != 'physicians') or \
                     (request.user.groups.all()[0].name == 'physicians' and report_instance.report_status == "PP"):
 
@@ -167,9 +167,7 @@ def edit_report(request, report_id):
                                           {"username": request.user.username, "report": report})
                     elif request.POST['submit'] == "save":
                         if report.is_valid():
-                            report_data = report.save(commit=False)
-                            report_data.report_status = 'PC'
-                            report_data.save()
+                            report.save()
                             messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Saved')
                             return redirect('read_report', report_id=report_id)
                         else:
@@ -222,7 +220,7 @@ def mark_report_complete(request, report_id):
             report.completing_account = request.user.username
             report.save()
             messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Marked as Complete')
-            return redirect('read_report', report_id=report_id)
+            return redirect('dashboard')
         else:
             messages.add_message(request, messages.WARNING,
                                  f'Incident Report Form Cannot be Marked as Complete, Report Status:  {report.report_status}')
@@ -242,7 +240,7 @@ def sign_off_report(request, report_id):
             report.physician_review_account = request.user.username
             report.save()
             messages.add_message(request, messages.SUCCESS, 'Incident Report Form Successfully Signed Off')
-            return redirect('read_report', report_id=report_id)
+            return redirect('dashboard')
         else:
             messages.add_message(request, messages.WARNING,
                                  f'Incident Report Form Cannot be Signed Off, Report Status:  {report.report_status}')
@@ -350,16 +348,17 @@ def dashboard(request):
     if request.user.is_authenticated:
         if request.user.groups.exists():
             if request.user.groups.all()[0].name == 'general_staff':
-                report = Report.objects.filter(report_status='PC', reporter_account=request.user.username)
+                reports = Report.objects.filter(report_status='PC', reporter_account=request.user.username).reverse()
                 filter_selection = [[], [], [], [], [], [], [], []]
                 return render(request, "dashboard.html", {"username": request.user.username, "reports": reports, "filter_selection": filter_selection})
             elif request.user.groups.all()[0].name == 'physicians':
-                report = Report.objects.filter(report_status='PP')
+                reports = Report.objects.filter(report_status='PP').reverse()
                 filter_selection = [[], [], [], [], [], [], [], []]
                 return render(request, "dashboard.html", {"username": request.user.username, "reports": reports, "filter_selection": filter_selection})
             else:
-                reports = Report.objects.all()filter_selection = [[], [], [], [], [], [], [], []]
-                 return render(request, "dashboard.html", {"username": request.user.username, "reports": reports, "filter_selection": filter_selection})
+                reports = Report.objects.all().reverse()
+                filter_selection = [[], [], [], [], [], [], [], []]
+                return render(request, "dashboard.html", {"username": request.user.username, "reports": reports, "filter_selection": filter_selection})
         else:
             messages.add_message(request, messages.WARNING, 'No group assigned to user')
             return render(request, 'index.html')
@@ -389,8 +388,8 @@ def dashboard_functionality(request):
 
 def dashboard_filtering(request):
     # Get dropdown options
-    location_options = request.GET.get('location_options_list').split('?')
-    care_options = request.GET.get('care_options_list').split('?')
+    location_options = request.GET.get('location_options_list', "").split('?')
+    care_options = request.GET.get('care_options_list', "").split('?')
     status_options = request.GET.get('status_options_list').split('?')
     incident_options = request.GET.get('incident_options_list').split('?')
     # Get selected options

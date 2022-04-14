@@ -42,7 +42,7 @@
                     </div>
                 {% endfor %}
             {% endif %}
-            <form class="col">
+            <div class="col">
                 <div>
                     <form action="/edit_report/{{ report.id }}" method="POST">
                         {% csrf_token %}

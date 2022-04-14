@@ -47,7 +47,7 @@ class ReportForm(forms.ModelForm):
         if form_data.get('BP') is None:
             self.add_error('BP', forms.ValidationError('BP Vital Sign is required', code='No BP Vital Sign'))
         else:
-            if "/" not in form_data.get('BP'):
+            if "/" in form_data.get('BP'):
                 bp = form_data.get('BP').split("/")
                 if bp[0].isdigit() & bp[1].isdigit():
                     if (int(bp[0]) > 500) | (int(bp[1]) > 500):
