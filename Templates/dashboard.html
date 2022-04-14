@@ -39,6 +39,17 @@
         </nav>
     </div>
     <div class="container" style="margin-bottom: 150px;">
+     <div class="container" style="margin-bottom: 50px; margin-top: 50px">
+        <div class="row d-flex justify-content-center justify-content-sm-center justify-content-xl-center">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} col-12 text-center">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="col">
+                <div>
     <div style="padding: 30px;border-radius: 10px;box-shadow: 0px 5px 10px 1px rgba(33,37,41,0.2);padding-bottom: 25px;margin-top: 15px;margin-bottom: 0px;">
             <div class="text-center"><a class="btn btn-secondary" data-bs-toggle="collapse" aria-expanded="true" aria-controls="collapse-2" href="#collapse-2" role="button" style="margin-bottom: 10px;width: 80%;font-size: 18px;"><i class="fa fa-filter"></i>&nbsp;Filters</a>
                 <div class="collapse show" id="collapse-2">
@@ -120,13 +131,19 @@
                         </p>
                     </div>
                     <div class="col-6" style="font-size: 18px;font-weight: bold;">
-                        <p>{{ report.date_of_incident }}</p>
+                        <p>{% if report.date_of_incident is not None %}{{ report.date_of_incident }}{% else %}{{ report.report_submission_date }} {% endif %}</p>
                     </div>
                     <div class="col-6">
-                        <p>Reporter Name: {{ report.name_of_writer }}</p>
+                        <p>Reporter Name: {{ report.writer_first_name }} {{ report.writer_last_name }}, {{ report.writer_position }}</p>
                     </div>
                     <div class="col-6">
-                        <p>Location: {{ report.incident_location }}</p>
+                        <p>Location:
+                            {% if report.incident_location == "BA" %} Bathroom
+                            {% elif report.incident_location == "BE" %} Bedroom
+                            {% elif report.incident_location == "HA" %} Hallway
+                            {% elif report.incident_location == "ST" %} Stairway
+                            {% elif report.incident_location == "OT" %} Other: {{ report.incident_location_other }}
+                            {% endif %}</p>
                     </div>
                     <div class="col-6">
                         <p>Community: {{ report.community }}</p>

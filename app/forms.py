@@ -11,13 +11,18 @@ class ReportForm(forms.ModelForm):
         form_data = self.cleaned_data
 
         # Checks that required fields are apparent in data
-        if form_data.get('name_of_writer') == '':
-            self.add_error('name_of_writer',
-                           forms.ValidationError('Name of Writer is required', code='No Name of Writer'))
 
-        if form_data.get('incident_location') == '':
-            self.add_error('incident_location',
-                           forms.ValidationError('Incident Location is required', code='No Incident Location'))
+        if form_data.get('writer_first_name') == '':
+            self.add_error('writer_first_name',
+                           forms.ValidationError('First Name of Writer is required', code='No First Name of Writer'))
+
+        if form_data.get('writer_last_name') == '':
+            self.add_error('writer_last_name',
+                           forms.ValidationError('Last Name of Writer is required', code='No Last Name of Writer'))
+
+        if form_data.get('writer_position') == '':
+            self.add_error('writer_position',
+                           forms.ValidationError('Position of Writer is required', code='No Position of Writer'))
 
         if form_data.get('date_of_incident') is None:
             self.add_error('date_of_incident',
@@ -41,6 +46,18 @@ class ReportForm(forms.ModelForm):
 
         if form_data.get('BP') is None:
             self.add_error('BP', forms.ValidationError('BP Vital Sign is required', code='No BP Vital Sign'))
+        else:
+            if "/" not in form_data.get('BP'):
+                bp = form_data.get('BP').split("/")
+                if bp[0].isdigit() & bp[1].isdigit():
+                    if (int(bp[0]) > 500) | (int(bp[1]) > 500):
+                        self.add_error('BP',
+                                       forms.ValidationError('BP Vital Sign is not Valid', code='Invalid BP Vital Sign'))
+                else:
+                    self.add_error('BP',
+                                   forms.ValidationError('BP Vital Sign is not Valid', code='Invalid BP Vital Sign'))
+            else:
+                self.add_error('BP', forms.ValidationError('BP Vital Sign is not Valid', code='Invalid BP Vital Sign'))
 
         if form_data.get('SpO2') is None:
             self.add_error('SpO2', forms.ValidationError('SpO2 Vital Sign is required', code='No SpO2 Vital Sign'))
@@ -48,18 +65,6 @@ class ReportForm(forms.ModelForm):
         if form_data.get('blood_sugar') is None:
             self.add_error('blood_sugar',
                            forms.ValidationError('Blood Sugar Value is required', code='No Blood Sugar Value'))
-
-        if form_data.get('pupil_size_L') is None:
-            self.add_error('pupil_size_L',
-                           forms.ValidationError('Pupil Size L Neuro-Vital Sign is required', code='No Pupil Size L'))
-
-        if form_data.get('pupil_size_R') is None:
-            self.add_error('pupil_size_R',
-                           forms.ValidationError('Pupil Size R Neuro-Vital Sign is required', code='No Pupil Size R'))
-
-        if form_data.get('CS') is None:
-            self.add_error('CS',
-                           forms.ValidationError('CS Neuro-Vital Sign is required', code='No CS Neuro-Vital Sign'))
 
         # Check if at least one of the individuals involved fields has an input
         if (form_data.get('residents') == '') & (form_data.get('staff') == '') & (form_data.get('others') == ''):
@@ -71,7 +76,7 @@ class ReportForm(forms.ModelForm):
                            forms.ValidationError('Individuals Involved must be filled', code='No Individuals'))
 
         # Check if the community field has been selected if the incident involves a resident
-        if (form_data.get('residents') is not None) & (form_data.get('community') is None):
+        if (form_data.get('residents') != '') & (form_data.get('community') is None):
             self.add_error('community', forms.ValidationError('Resident\'s Community Must Be Selected',
                                                               code='Empty Community'))
 
@@ -80,6 +85,14 @@ class ReportForm(forms.ModelForm):
             self.add_error('residents',
                            forms.ValidationError('Resident\'s name not provided after selecting resident\'s community',
                                                  code='Empty Resident'))
+
+        # Check if the incident location has been selected and other location specified if necessary
+        if form_data.get('incident_location') is None:
+            self.add_error('incident_location', forms.ValidationError('Incident Location not specified',
+                                                                      code='No Location'))
+        elif (form_data.get('incident_location') == 'OT') & (form_data.get('incident_location_other') == ''):
+            self.add_error('incident_location_other', forms.ValidationError('Other Incident Location Not Specified',
+                                                                            code='No Incident Location Description'))
 
         # Check if the incident type has been selected
         if ((form_data.get('near_miss') is None) & (form_data.get('fall') is None) &
@@ -110,7 +123,7 @@ class ReportForm(forms.ModelForm):
                                                  code='No Condition Description'))
 
         # Check if the family of the resident involved has been notified correctly
-        if form_data.get('family_notified') == 'True':
+        if form_data.get('family_notified', False):
             if form_data.get('family_name') == '':
                 self.add_error('family_name', forms.ValidationError('No Family Notification Name Provided',
                                                                     code='No Family Name'))
@@ -119,7 +132,7 @@ class ReportForm(forms.ModelForm):
                                                                                  code='No Family Date'))
 
         # Check if a physician has been notified correctly
-        if form_data.get('physician_notified') == 'True':
+        if form_data.get('physician_notified', False):
             if form_data.get('physician_name') == '':
                 self.add_error('physician_name', forms.ValidationError('No Physician Notification Name Provided',
                                                                        code='No Physician Name'))
@@ -128,7 +141,7 @@ class ReportForm(forms.ModelForm):
                                forms.ValidationError('No Physician Notification Date Provided', code='No Physician Date'))
 
         # Check if a supervisor has been notified correctly
-        if form_data.get('supervisor_notified') == 'True':
+        if form_data.get('supervisor_notified', False):
             if form_data.get('supervisor_name') == '':
                 self.add_error('supervisor_name', forms.ValidationError('No Supervisor Notification Name Provided',
                                                                         code='No Supervisor Name'))
@@ -136,3 +149,8 @@ class ReportForm(forms.ModelForm):
                 self.add_error('supervisor_notification_date',
                                forms.ValidationError('No Supervisor Notification Date Provided',
                                                      code='No Supervisor Date'))
+
+        if (form_data.get('residents') != '') & (form_data.get('incident_documented_on_chart') is None):
+            self.add_error('incident_documented_on_chart', forms.ValidationError(
+                'Incident Documented on Chart required for Incidents Involving Residents',
+                           code="Incident Documented on Chart Required"))
