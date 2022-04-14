@@ -23,16 +23,17 @@ def location_options(value, filter_selection):
     s = ""
     options = ""
     for x in value:
-        if x.incident_location not in temp:
-            temp.append(x.incident_location)
-            options = options + x.incident_location + "?" #'?' is being used as a delimiter that I know won't be picked up by the HTML
-            s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.incident_location + '" value="' +  x.incident_location + '" id="formCheck-8"'
-            print("Location X: " + x.incident_location)
-            if filter_selection[4] is not None:
-                if x.incident_location in filter_selection[3]:
-                    s = s + 'checked'
-            s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + x.incident_location + '\n</label>\n</div>\n'
-    s = s + '<input type="hidden" name="location_options_list" value="' + options[:-1] + '"></input>\n'   #drops the extra delimiter from the end of the string
+        if x.incident_location is not None:
+            if x.incident_location not in temp:
+                temp.append(x.incident_location)
+                options = options + x.incident_location + "?"  # '?' is being used as a delimiter that I know won't be picked up by the HTML
+                s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.incident_location + '" value="' + x.incident_location + '" id="formCheck-8"'
+                print("Location X: " + x.incident_location)
+                if filter_selection[4] is not None:
+                    if x.incident_location in filter_selection[3]:
+                        s = s + 'checked'
+                s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + x.incident_location + '\n</label>\n</div>\n'
+            s = s + '<input type="hidden" name="location_options_list" value="' + options[:-1] + '"></input>\n'   #drops the extra delimiter from the end of the string
 
     return mark_safe(s)
 
@@ -43,15 +44,19 @@ def care_options(value, filter_selection):
     s = ""
     options = ""
     for x in value:
-        if x.community not in temp:
-            temp.append(x.community)
-            s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.community + '" value="' + str(x.community) + '" id="formCheck-8"'
-            print("Care X: " + x.community)
-            if filter_selection[4] is not None:
-                if x.community in filter_selection[4]:
-                    s = s + 'checked'
-            s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + str(x.community) + '\n</label>\n</div>\n'
-            options = options + x.community + "?"
+        if x.community is not None:
+            if x.community not in temp:
+                temp.append(x.community)
+                s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.community + '" value="' + str(
+                    x.community) + '" id="formCheck-8"'
+                print("Care X: " + x.community)
+                if filter_selection[4] is not None:
+                    if x.community in filter_selection[4]:
+                        s = s + 'checked'
+                s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + str(
+                    x.community) + '\n</label>\n</div>\n'
+                options = options + x.community + "?"
+
     s = s + '<input type="hidden" name="care_options_list" value="' + options[:-1] + '"></input>\n'
     return mark_safe(s)
 
@@ -62,15 +67,19 @@ def report_status(value, filter_selection):
     s = ""
     options = ""
     for x in value:
-        if x.report_status not in temp:
-            temp.append(x.report_status)
-            s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.report_status + '" value="' + str(x.report_status) + '" id="formCheck-8"'
-            print("Status X: " + x.report_status)
-            if filter_selection[6] is not None:
-                if x.report_status in filter_selection[6]:
-                    s = s + 'checked'
-            s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + str(x.report_status) + '\n</label>\n</div>\n'
-            options = options + x.report_status + "?"
+        if x.report_status is not None:
+            if x.report_status not in temp:
+                temp.append(x.report_status)
+                s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.report_status + '" value="' + str(
+                    x.report_status) + '" id="formCheck-8"'
+                print("Status X: " + x.report_status)
+                if filter_selection[6] is not None:
+                    if x.report_status in filter_selection[6]:
+                        s = s + 'checked'
+                s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + str(
+                    x.report_status) + '\n</label>\n</div>\n'
+                options = options + x.report_status + "?"
+
     s = s + '<input type="hidden" name="status_options_list" value="' + options[:-1] + '"></input>\n'
     return mark_safe(s)
 
@@ -97,7 +106,6 @@ def incident_options(value, filter_selection):
         if x.treatment_error:
             temp.append('Treatment Error')
             break
-
 
     for x in value:
         if x.death:

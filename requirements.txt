@@ -1,3 +1,8 @@
-asgiref==3.5.0
-Django==4.0.1
+asgiref~=3.4.1
+Django~=3.2.13
 sqlparse==0.4.2
+
+pytz~=2022.1
+pip~=21.3.1
+wheel~=0.37.1
+setuptools~=59.6.0
