@@ -266,7 +266,7 @@ def export(request):
 def dashboard(request):
     if request.user.is_authenticated:
         reports = Report.objects.all()
-        filter_selection = []
+        filter_selection = [[], [], [], [], [], [], [], []]
         return render(request, "dashboard.html", {"username": request.user.username, "reports": reports, "filter_selection": filter_selection})
     else:
         messages.error(request, f'User is not authenticated')
@@ -287,7 +287,7 @@ def dashboard_functionality(request):
         if request.GET.get('submit') == "apply_filters":
             return dashboard_filtering(request)
     reports = Report.objects.all()
-    filter_selection = []
+    filter_selection = [[], [], [], [], [], [], [], []]
     return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50], "filter_selection": filter_selection})
 
 
@@ -297,15 +297,15 @@ def dashboard_filtering(request):
     care_options = request.GET.get('care_options_list').split('?')
     status_options = request.GET.get('status_options_list').split('?')
     incident_options = request.GET.get('incident_options_list').split('?')
-    print("incident options: " + str(len(incident_options)))
     # Get selected options
     location_selection = get_filter_selection(request, location_options)
     care_selection = get_filter_selection(request, care_options)
     status_selection = get_filter_selection(request, status_options)
     incident_selection = get_filter_selection(request, incident_options)
-    print("incident selection: " + str(len(incident_selection)))
     reports_to_display = apply_filters(request, location_selection, care_selection, status_selection, incident_selection)
+    print(str(len(status_selection)))
     filter_selection = [request.GET.get('residents_name'), [request.GET.get('date_from'), request.GET.get('date_to')], request.GET.get('reporter_name'), location_selection, care_selection, incident_selection, status_selection, request.GET.get('display_all_toggle')]
+    print("filter_selection: " + str(len(filter_selection)))
     if request.GET.get('display_all_toggle') is not None:
         return render(request, "dashboard.html",
                       {"username": request.user.username, "reports": reports_to_display, "filter_selection": filter_selection})

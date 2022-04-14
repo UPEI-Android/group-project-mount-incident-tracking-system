@@ -26,7 +26,12 @@ def location_options(value, filter_selection):
         if x.incident_location not in temp:
             temp.append(x.incident_location)
             options = options + x.incident_location + "?" #'?' is being used as a delimiter that I know won't be picked up by the HTML
-            s = s + ('\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.incident_location + '" value="' +  x.incident_location + '" id="formCheck-8">\n<label class="form-check-label" for="formCheck-8">\n' + x.incident_location + '\n</label>\n</div>\n')
+            s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.incident_location + '" value="' +  x.incident_location + '" id="formCheck-8"'
+            print("Location X: " + x.incident_location)
+            if filter_selection[4] is not None:
+                if x.incident_location in filter_selection[3]:
+                    s = s + 'checked'
+            s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + x.incident_location + '\n</label>\n</div>\n'
     s = s + '<input type="hidden" name="location_options_list" value="' + options[:-1] + '"></input>\n'   #drops the extra delimiter from the end of the string
 
     return mark_safe(s)
@@ -40,7 +45,12 @@ def care_options(value, filter_selection):
     for x in value:
         if x.community not in temp:
             temp.append(x.community)
-            s = s + ('\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.community + '" value="' + str(x.community) + '" id="formCheck-8">\n<label class="form-check-label" for="formCheck-8">\n' + str(x.community) + '\n</label>\n</div>\n')
+            s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.community + '" value="' + str(x.community) + '" id="formCheck-8"'
+            print("Care X: " + x.community)
+            if filter_selection[4] is not None:
+                if x.community in filter_selection[4]:
+                    s = s + 'checked'
+            s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + str(x.community) + '\n</label>\n</div>\n'
             options = options + x.community + "?"
     s = s + '<input type="hidden" name="care_options_list" value="' + options[:-1] + '"></input>\n'
     return mark_safe(s)
@@ -54,7 +64,12 @@ def report_status(value, filter_selection):
     for x in value:
         if x.report_status not in temp:
             temp.append(x.report_status)
-            s = s + ('\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.report_status + '" value="' + str(x.report_status) + '" id="formCheck-8">\n<label class="form-check-label" for="formCheck-8">\n' + str(x.report_status) + '\n</label>\n</div>\n')
+            s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name="' + x.report_status + '" value="' + str(x.report_status) + '" id="formCheck-8"'
+            print("Status X: " + x.report_status)
+            if filter_selection[6] is not None:
+                if x.report_status in filter_selection[6]:
+                    s = s + 'checked'
+            s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + str(x.report_status) + '\n</label>\n</div>\n'
             options = options + x.report_status + "?"
     s = s + '<input type="hidden" name="status_options_list" value="' + options[:-1] + '"></input>\n'
     return mark_safe(s)
@@ -101,8 +116,10 @@ def incident_options(value, filter_selection):
     options = ""
     for x in temp:
         s = s + '\n<div class="form-check" style="margin-left: 10px;">\n<input class="form-check-input" type="checkbox" name ="' + str(x) + '"value="' + str(x) + '" id="formCheck-8"'
-        if x in filter_selection:
-            s = s + 'checked'
+        print("Incident X: " + x)
+        if filter_selection[5] is not None:
+            if x in filter_selection[5]:
+                s = s + 'checked'
         s = s + '>\n<label class="form-check-label" for="formCheck-8">\n' + str(x) + '\n</label>\n</div>\n'
         options = options + str(x) + "?"
     s = s + '<input type="hidden" name="incident_options_list" value="' + options[:-1] + '"></input>\n'
@@ -111,6 +128,48 @@ def incident_options(value, filter_selection):
 
 @register.filter(name="display_all_toggle")
 def display_all_toggle(filter_selection):
-    return '<input class="form-check-input" type="checkbox" id="formCheck-3" name="display_all_toggle" ' \
-           'style="text-align: left;border: 2px solid rgb(0, 0, 0);padding: 7px;">\n<label class="form-check-label" ' \
-           'for="formCheck-3" style="font-size: 18px;">&nbsp;Display All</label>\n</input> '
+    s = '\n<input class="form-check-input" type="checkbox" id="formCheck-3" name="display_all_toggle" style="text-align: left;border: 2px solid rgb(0, 0, 0);padding: 7px;"'
+    print("Display All: " + str(filter_selection[7]))
+    if filter_selection[7] is not None:
+        s = s + 'checked'
+    s = s + '>\n<label class="form-check-label" for="formCheck-3" style="font-size: 18px;">&nbsp;Display All</label>\n </input>'
+    return mark_safe(s)
+
+
+@register.filter(name="date_to_input")
+def date_to_input(filter_selection):
+    s = '<input class="form-control" type="date" name="date_from" style="margin-left: 10px;margin-right: 10px;width: 90%;"'
+    if len(filter_selection[1]) != 0:
+        print("Dates: " + str(filter_selection[1]))
+        if filter_selection[1][0] is not None:
+            s = s + 'value="' + filter_selection[1][0] + '"'
+    s = s + '>'
+    return mark_safe(s)
+
+@register.filter(name="date_from_input")
+def date_from_input(filter_selection):
+    s = '<input class="form-control" type="date" name="date_to" style="margin-left: 10px;margin-right: 10px;width: 90%;"'
+    if len(filter_selection[1]) != 0:
+        print("Dates: " + str(filter_selection[1]))
+        if filter_selection[1][1] is not None:
+            s = s + 'value="' + filter_selection[1][1] + '"'
+    s = s + '>'
+    return mark_safe(s)
+
+
+@register.filter(name="resident_search_field")
+def resident_search_field(filter_selection):
+    s = '<input class="form-control" type="text" name="residents_name" placeholder="Residents" style="border: 2px solid var(--bs-dark);text-align: center;font-size: 18px;color: #000000;"'
+    if len(filter_selection[0]) != 0:
+        s = s + 'value="' + filter_selection[0] + '"'
+    s = s + '>'
+    return mark_safe(s)
+
+
+@register.filter(name="reporter_search_field")
+def reporter_search_field(filter_selection):
+    s = '<input class="form-control" type="text" name="reporter_name" placeholder="Reporter" style="border: 2px solid var(--bs-dark);text-align: center;font-size: 18px;color: #000000;"'
+    if len(filter_selection[2]) != 0:
+        s = s + 'value="' + filter_selection[2] + '"'
+    s = s + '>'
+    return mark_safe(s)
