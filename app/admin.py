@@ -2,13 +2,15 @@ from django.contrib import admin
 from . import models
 
 
+# Creates a template to group fields together when you create, update, or view a report in the admin backend
 class ReportAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Individuals Involved', {
             'fields': ('residents', 'staff', 'others', 'community')
         }),
         ('Basic Incident Information', {
-            'fields': ('name_of_writer', 'incident_location', 'date_of_incident')
+            'fields': ('writer_first_name', 'writer_last_name', 'writer_position',
+                       'incident_location', 'date_of_incident')
         }),
         ('Additional Forms', {
             'fields': ('fall_risk_assessment', 'employee_wcb_form', 'employer_wcb_form')
@@ -26,10 +28,7 @@ class ReportAdmin(admin.ModelAdmin):
             'fields': ('condition', 'condition_other_description')
         }),
         ('Vital Signs', {
-            'fields': (('T', 'P', 'R'), ('BP', 'SpO2', 'blood_sugar'))
-        }),
-        ('Neurovital Signs', {
-            'fields': ('pupil_size_L', 'pupil_size_R', 'CS')
+            'fields': (('T', 'P', 'R'), ('BP', 'SpO2', 'blood_sugar', 'NVS_report_completed'))
         }),
         ('Required Notifications', {
             'fields': (('family_notified', 'family_name', 'family_notification_date'),
