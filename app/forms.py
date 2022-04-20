@@ -2,16 +2,17 @@ from django import forms
 from app.models import Report
 
 
+# Creates a Django Form from the Report Model using all fields available
 class ReportForm(forms.ModelForm):
     class Meta:
         model = Report
         fields = '__all__'
 
+    # Provides additional validation in accordance with standard specified by client
     def validate(self):
         form_data = self.cleaned_data
 
         # Checks that required fields are apparent in data
-
         if form_data.get('writer_first_name') == '':
             self.add_error('writer_first_name',
                            forms.ValidationError('First Name of Writer is required', code='No First Name of Writer'))

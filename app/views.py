@@ -13,7 +13,9 @@ from datetime import datetime
 from app.decorators import allowed_users
 
 
-# Create your views here.
+# Renders the login in template and authenticates the user
+# Will redirect users if they are already authenticated
+# Will redirect users to the page they attempted to visit while unauthenticated if they log in correctly
 def home(request):
     if request.method == "POST":
         username = request.POST['Username']
@@ -36,6 +38,10 @@ def home(request):
             return render(request, 'index.html')
 
 
+# Renders the input form template for users
+# Receives data from POST requests to create new report forms
+# Validates data and re-renders template with error indicators if the report has an error
+# Valid report are saved to the database with the proper report status, based on user type and report content
 @allowed_users(allowed_roles=["super_admins", "admins", "supervisors", "general_staff"])
 def form(request):
     if request.user.is_authenticated:
@@ -51,8 +57,11 @@ def form(request):
                     report_data = report.save(commit=False)
                     # Check if the resident is in a Nursing Care community to indicate that a Physician must review
                     # the report
-                    if 'NC' in report_data.community:
-                        report_data.report_status = 'PP'
+                    if report_data.community is not None:
+                        if 'NC' in report_data.community:
+                            report_data.report_status = 'PP'
+                        else:
+                            report_data.report_status = 'SU'
                     else:
                         report_data.report_status = 'SU'
                     # Adds the reporting accounts username to the data and saves the data to the database
@@ -92,10 +101,11 @@ def form(request):
         request.session['previous_page'] = reverse("form")
         if request.method == 'POST':
             request.session['report_data'] = request.POST
-        messages.error(request, f'User is not authenticated')
+        messages.add_message(request, messages.WARNING, f'User is not authenticated')
         return redirect('home')
 
 
+# Renders template for user to view the content of a specified report
 def read_report(request, report_id):
     if request.user.is_authenticated:
         if request.user.groups.exists():
@@ -121,10 +131,14 @@ def read_report(request, report_id):
             return render(request, 'index.html')
     else:
         request.session['previous_page'] = reverse("read_report", kwargs={'report_id': report_id})
-        messages.error(request, f'User is not authenticated')
+        messages.add_message(request, messages.WARNING, f'User is not authenticated')
         return redirect('home')
 
 
+# Renders edit report template, based on the type of user, template is provided data of specified report to display
+# Receives data from POST request to update the data of the specified report after validation
+# Validates data and re-renders the template with error indicators if report is invalid
+# Valid report is saved to the database with appropriate status based on report content
 def edit_report(request, report_id):
     if request.user.is_authenticated:
         report_instance = Report.objects.get(id=report_id)
@@ -145,12 +159,14 @@ def edit_report(request, report_id):
                         report.validate()
                         if report.is_valid():
                             # Create an instance of the database object to add the report status to
-
                             report_data = report.save(commit=False)
                             # Check if the resident is in a Nursing Care community to indicate that a Physician must
                             # review the report
-                            if 'NC' in report_data.community:
-                                report_data.report_status = 'PP'
+                            if report_data.community is not None:
+                                if 'NC' in report_data.community:
+                                    report_data.report_status = 'PP'
+                                else:
+                                    report_data.report_status = 'SU'
                             else:
                                 report_data.report_status = 'SU'
                             # Adds the reporting accounts username to the data and saves the data to the database
@@ -194,27 +210,32 @@ def edit_report(request, report_id):
         if request.method == 'POST':
             request.session['report_data'] = request.POST
         request.session['previous_page'] = reverse("edit_report", kwargs={'report_id': report_id})
-        messages.error(request, f'User is not authenticated')
+        messages.add_message(request, messages.WARNING, f'User is not authenticated')
         return redirect('home')
 
 
+# Renders dashboard export template, allowing users to select which reports the user wishes to export
+# Filters report based on user preference
 @allowed_users(allowed_roles=["super_admins", "admins"])
 def dashboard_export(request):
     if request.user.is_authenticated:
         reports = Report.objects.all()
         displayReports = reports.reverse()[:50]
+        filter_selection = [[], [], [], [], [], [], [], []]
         return render(request, "dashboard-export.html",
-                      {"username": request.user.username, "reports": displayReports, "count": displayReports.count()})
+                      {"username": request.user.username, "reports": displayReports,
+                       "count": displayReports.count(), "filter_selection": filter_selection})
     else:
         request.session['previous_page'] = reverse("form")
-        messages.error(request, f'User is not authenticated')
+        messages.add_message(request, messages.WARNING, f'User is not authenticated')
         return redirect('home')
 
 
+# Changes the specified report's status from SU(Submitted) to CO(Complete), appending the user's username to the report
 @allowed_users(allowed_roles=["super_admins", "admins"])
 def mark_report_complete(request, report_id):
     if request.user.is_authenticated:
-        report = Report.objects.filter(id=report_id)[0]
+        report = Report.objects.get(id=report_id)
         if report.report_status == "SU":
             report.report_status = "CO"
             report.completing_account = request.user.username
@@ -227,14 +248,16 @@ def mark_report_complete(request, report_id):
             return redirect('read_report', report_id=report_id)
     else:
         request.session['previous_page'] = reverse("read_report", kwargs={'report_id': report_id})
-        messages.error(request, f'User is not authenticated')
+        messages.add_message(request, messages.WARNING, f'User is not authenticated')
         return redirect('home')
 
 
+# Changes the specified report's status from PP(Pending Physician) to SU(Submitted)
+# Appends the user's username to the report
 @allowed_users(allowed_roles=["physicians"])
 def sign_off_report(request, report_id):
     if request.user.is_authenticated:
-        report = Report.objects.filter(id=report_id)[0]
+        report = Report.objects.get(id=report_id)
         if report.report_status == "PP":
             report.report_status = "SU"
             report.physician_review_account = request.user.username
@@ -247,13 +270,15 @@ def sign_off_report(request, report_id):
             return redirect('read_report', report_id=report_id)
     else:
         request.session['previous_page'] = reverse("read_report", kwargs={'report_id': report_id})
-        messages.error(request, f'User is not authenticated')
+        messages.add_message(request, messages.WARNING, f'User is not authenticated')
         return redirect('home')
 
 
+# Receives list of reports to be exported to a .csv file
+# Creates the .csv file by retrieving data of specifed reports
 @allowed_users(allowed_roles=["super_admins", "admins"])
 def export(request):
-    if request.method == "GET" & request.user.is_authenticated:
+    if (request.method == "GET") & (request.user.is_authenticated):
         count = int(request.GET.get("report_count"))
         response = HttpResponse(
             content_type='text/csv',
@@ -261,11 +286,12 @@ def export(request):
         )
         writer = csv.writer(response)
         writer.writerow(
-            ['Community', 'Residents', 'Staff', 'Others', 'Writer', 'Location', 'Date', 'Fall Risk Assessment',
+            ['Community', 'Residents', 'Staff', 'Others', 'Writer First Name', 'Writer Last Name', 'Writer Position',
+             'Location', 'Date', 'Fall Risk Assessment',
              'Employee WCB Form', 'Employer WCB Form', 'Incident Type', 'Reason For Medication Error',
              'Incident Description', 'Action Taken', 'Condition', 'Vitals: T', 'Vitals: P', 'Vitals: R', 'Vitals: BP',
-             'Vitals: SpO2', 'Vitals: Blood Sugar', 'Neurovitals: Pupil Size L', 'Neurovitals: Pupil Size R',
-             'Neurovitals: CS', 'Family Notified', 'Family Member Name', 'Family Notification Date',
+             'Vitals: SpO2', 'Vitals: Blood Sugar', 'Neurovital Report Completed', 'Family Notified',
+             'Family Member Name', 'Family Notification Date',
              'Physician Notified', 'Physician Name', 'Physician Notification Date', 'Supervisor Notified',
              'Supervisor Name', 'Supervisor Notification Date', 'Action Treatment Prescribed', 'Cause of Incident',
              'Prevention Plan of Incident', 'Incident Documented on Chart', 'Post Incident Huddle Held',
@@ -321,12 +347,13 @@ def export(request):
                     type_of_incident += "Staff Injury\n"
 
                 writer.writerow(
-                    [report.community, report.residents, report.staff, report.others, report.name_of_writer,
+                    [report.community, report.residents, report.staff, report.others, report.writer_first_name,
+                     report.writer_last_name, report.writer_position,
                      report.incident_location, report.date_of_incident, report.fall_risk_assessment,
                      report.employee_wcb_form, report.employer_wcb_form, type_of_incident, medication_error_reason,
                      report.incident_description, report.action_taken, report.condition, report.T, report.P, report.R,
-                     report.BP, report.SpO2, report.blood_sugar, report.pupil_size_L,
-                     report.pupil_size_R, report.CS, report.family_notified, report.family_name,
+                     report.BP, report.SpO2, report.blood_sugar, report.NVS_report_completed,
+                     report.family_notified, report.family_name,
                      report.family_notification_date, report.physician_notified, report.physician_name,
                      report.physician_notification_date,
                      report.supervisor_notified, report.supervisor_name, report.supervisor_notification_date,
@@ -340,15 +367,16 @@ def export(request):
         return response
     else:
         request.session['previous_page'] = reverse("dashboard")
-        messages.error(request, f'User is not authenticated')
+        messages.add_message(request, messages.WARNING, f'User is not authenticated')
         return redirect('home')
 
 
+# Renders dashboard template with filtered report results based on user type and filter controls specified by user
 def dashboard(request):
     if request.user.is_authenticated:
         if request.user.groups.exists():
             if request.user.groups.all()[0].name == 'general_staff':
-                reports = Report.objects.filter(report_status='PC', reporter_account=request.user.username).reverse()
+                reports = Report.objects.filter(report_status='PC', reporter_account=request.user.username)
                 filter_selection = [[], [], [], [], [], [], [], []]
                 return render(request, "dashboard.html", {"username": request.user.username, "reports": reports, "filter_selection": filter_selection})
             elif request.user.groups.all()[0].name == 'physicians':
@@ -364,10 +392,11 @@ def dashboard(request):
             return render(request, 'index.html')
     else:
         request.session['previous_page'] = reverse("dashboard")
-        messages.error(request, f'User is not authenticated')
+        messages.add_message(request, messages.WARNING, f'User is not authenticated')
         return redirect('home')
 
 
+# Authenticated user is logged out of the system and returned to the home screen.
 def logout_view(request):
     if request.user.is_authenticated:
         logout(request)
@@ -377,6 +406,7 @@ def logout_view(request):
     return redirect('home')
 
 
+# Retrieves the list of filter controls to filter report results by the specified controls
 def dashboard_functionality(request):
     if request.method == "GET":
         if request.GET.get('submit') == "apply_filters":
@@ -386,6 +416,7 @@ def dashboard_functionality(request):
     return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50], "filter_selection": filter_selection})
 
 
+# Renders dashboard with filtered results based on filters specified by user
 def dashboard_filtering(request):
     # Get dropdown options
     location_options = request.GET.get('location_options_list', "").split('?')
@@ -398,20 +429,21 @@ def dashboard_filtering(request):
     status_selection = get_filter_selection(request, status_options)
     incident_selection = get_filter_selection(request, incident_options)
     reports_to_display = apply_filters(request, location_selection, care_selection, status_selection, incident_selection)
-    print(str(len(status_selection)))
+    # print(str(len(status_selection)))
     filter_selection = [request.GET.get('residents_name'), [request.GET.get('date_from'), request.GET.get('date_to')], request.GET.get('reporter_name'), location_selection, care_selection, incident_selection, status_selection, request.GET.get('display_all_toggle')]
-    print("filter_selection: " + str(len(filter_selection)))
+    # print("filter_selection: " + str(len(filter_selection)))
     if request.GET.get('display_all_toggle') is not None:
         return render(request, "dashboard.html",
                       {"username": request.user.username, "reports": reports_to_display, "filter_selection": filter_selection})
     return render(request, "dashboard.html", {"username": request.user.username, "reports": reports_to_display[:50], "filter_selection": filter_selection})
 
 
+# Create filter options based on information in reports in the report list
 def get_filter_selection(request, options):
     temp = []
-    print(options[0])
+    # print(options[0])
     for x in options:
-        print(request.GET.get(x))
+        # print(request.GET.get(x))
         if request.GET.get(x) is not None:
             temp.append(x)
     #if len(temp) == 0:
@@ -419,6 +451,7 @@ def get_filter_selection(request, options):
     return temp
 
 
+# Filters list of report results
 def apply_filters(request, location_selection, care_selection, status_selection, incident_selection):
     reports = Report.objects.all()
     results = []
@@ -450,7 +483,7 @@ def care_filter(report, care_list):
 
 def incident_filter(report, incident_list):
     if len(incident_list) == 0:
-        print("empty incident list")
+        # print("empty incident list")
         return True
     if report.near_miss:
         for x in incident_list:
@@ -494,11 +527,12 @@ def status_filter(report, status_list):
 
 
 def reporter_filter(report, query):
+    name_of_writer = (report.writer_first_name + " " + report.writer_last_name + " " + report.writer_position).lower()
     if query == "":  # if this field hasn't been used just ignore it
         return True
-    if report.name_of_writer.lower() == query.lower():
+    if name_of_writer == query.lower():
         return True
-    if query.lower() in report.name_of_writer.lower():
+    if query.lower() in name_of_writer:
         return True
     return False
 
@@ -536,6 +570,7 @@ def date_filter(report, request):
     return from_bool and to_bool
 
 
+# Deletes specified report from the database
 @allowed_users(allowed_roles=["super_admins", "admins"])
 def delete_report(request, report_id):
     if request.user.is_authenticated:
@@ -544,6 +579,6 @@ def delete_report(request, report_id):
         messages.success(request, "Report Deleted successfully!")
         return redirect('dashboard')
     else:
-        messages.error(request, f'User is not authenticated')
+        messages.add_message(request, messages.WARNING, f'User is not authenticated')
         return redirect('home')
 

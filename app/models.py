@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.core.validators import MaxValueValidator, RegexValidator
 
-
+# Creates template for database fields and specify requirements.
 class Report(models.Model):
 
     # Community choices
