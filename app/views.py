@@ -416,6 +416,39 @@ def dashboard_functionality(request):
     return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50], "filter_selection": filter_selection})
 
 
+def dashboard_export_func(request):
+    if request.method == "GET":
+        if request.GET.get('submit') == "CSV":
+            return export(request)
+        elif request.GET.get('submit') == "apply_filters":
+            return dashboard_export_filtering(request)
+
+    reports = Report.objects.all()
+    filter_selection = [[], [], [], [], [], [], [], []]
+    return render(request, "dashboard.html", {"username": request.user.username, "reports": reports[:50], "filter_selection": filter_selection})
+
+
+def dashboard_export_filtering(request):
+    # Get dropdown options
+    location_options = request.GET.get('location_options_list', "").split('?')
+    care_options = request.GET.get('care_options_list', "").split('?')
+    status_options = request.GET.get('status_options_list').split('?')
+    incident_options = request.GET.get('incident_options_list').split('?')
+    # Get selected options
+    location_selection = get_filter_selection(request, location_options)
+    care_selection = get_filter_selection(request, care_options)
+    status_selection = get_filter_selection(request, status_options)
+    incident_selection = get_filter_selection(request, incident_options)
+    reports_to_display = apply_filters(request, location_selection, care_selection, status_selection, incident_selection)
+    # print(str(len(status_selection)))
+    filter_selection = [request.GET.get('residents_name'), [request.GET.get('date_from'), request.GET.get('date_to')], request.GET.get('reporter_name'), location_selection, care_selection, incident_selection, status_selection, request.GET.get('display_all_toggle')]
+    # print("filter_selection: " + str(len(filter_selection)))
+    if request.GET.get('display_all_toggle') is not None:
+        return render(request, "dashboard-export.html",
+                      {"username": request.user.username, "reports": reports_to_display, "filter_selection": filter_selection})
+    return render(request, "dashboard-export.html", {"username": request.user.username, "reports": reports_to_display[:50], "filter_selection": filter_selection})
+
+
 # Renders dashboard with filtered results based on filters specified by user
 def dashboard_filtering(request):
     # Get dropdown options
