@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import authenticate
 
-
+# test to check if the right templates are rendered for each view
 class TestViews(TestCase):
     def setUp(self):
         self.home_url = reverse('home')
@@ -68,6 +68,11 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 302)
 
     def test_unauthenticated_user(self):
+        response = self.client.post(self.home_url, self.anAuthUser, format='text/html')
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'index.html')
+
+    def test_delete_report(self):
         response = self.client.post(self.home_url, self.anAuthUser, format='text/html')
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'index.html')

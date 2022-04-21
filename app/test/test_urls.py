@@ -3,6 +3,7 @@ from django.urls import reverse, resolve
 from app.views import home, form, dashboard, logout_view, dashboard_export
 
 
+# Test to check if urls are resolved properly
 class TestUrls(SimpleTestCase):
 
     def test_home_url_is_resolved(self):
