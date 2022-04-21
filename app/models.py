@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.db import models
+from django.core.validators import MaxValueValidator, RegexValidator
 
-
+# Creates template for database fields and specify requirements.
 class Report(models.Model):
 
     # Community choices
@@ -32,9 +33,24 @@ class Report(models.Model):
     others = models.TextField(default='', blank=True, verbose_name='Other Individual(s) Involved')
 
     # Basic Incident Information
-    name_of_writer = models.CharField(max_length=120, default='', blank=True, verbose_name='Name of Report Writer')
-    incident_location = models.CharField(max_length=120, default='', blank=True, verbose_name='Incident Location')
+    writer_first_name = models.CharField(max_length=60, default='', blank=True, verbose_name='First Name of Report Writer')
+    writer_last_name = models.CharField(max_length=60, default='', blank=True, verbose_name='Last Name of Report Writter')
+    writer_position = models.CharField(max_length=40, default='', blank=True, verbose_name='Position of Report Writer')
     date_of_incident = models.DateTimeField(default='1999-12-31 11:59[:59[.999999]][America/Halifax]', blank=True, null=True, verbose_name='Date of Incident')
+    INCIDENT_LOCATION_BATHROOM = ("BA", "Bathroom")
+    INCIDENT_LOCATION_BEDROOM = ("BE", "Bedroom")
+    INCIDENT_LOCATION_HALLWAY = ("HA", "Hallway")
+    INCIDENT_LOCATION_STAIRS = ("ST", "Stairs")
+    INCIDENT_LOCATION_OTHER = ("OT", "Other")
+    INCIDENT_LOCATIONS = [
+        INCIDENT_LOCATION_BATHROOM,
+        INCIDENT_LOCATION_BEDROOM,
+        INCIDENT_LOCATION_HALLWAY,
+        INCIDENT_LOCATION_STAIRS,
+        INCIDENT_LOCATION_OTHER
+    ]
+    incident_location = models.CharField(max_length=2, choices=INCIDENT_LOCATIONS, default=None, blank=True, null=True, verbose_name="Incident Location")
+    incident_location_other = models.CharField(max_length=80, default='', blank=True, verbose_name='Incident Location Description')
 
     # Radio Buttons
     fall_risk_assessment = models.BooleanField(default=False, null=True, verbose_name='Fall Risk Assessment Performed')
@@ -93,26 +109,24 @@ class Report(models.Model):
     condition_other_description = models.TextField(default='', blank=True, verbose_name='Other Condition Description')
 
     # Vital Signs
-    T = models.IntegerField(default=0, blank=True, null=True)
-    P = models.IntegerField(default=0, blank=True, null=True)
-    R = models.IntegerField(default=0, blank=True, null=True)
-    BP = models.IntegerField(default=0, blank=True, null=True)
-    SpO2 = models.IntegerField(default=0, blank=True, null=True)
-    blood_sugar = models.IntegerField(default=0, blank=True, null=True, verbose_name='Blood Sugar')
+    T = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(50)], blank=True, null=True)
+    P = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(500)], blank=True, null=True)
+    R = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(500)], blank=True, null=True)
+    BP = models.CharField(default=0, max_length=7, validators=[RegexValidator('\\d{1,3}\\/\\d{1,3}')], blank=True, null=True)
+    SpO2 = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(100)], blank=True, null=True)
+    blood_sugar = models.PositiveIntegerField(default=0, blank=True, null=True, verbose_name='Blood Sugar')
 
     # Neurovital Signs
-    pupil_size_L = models.IntegerField(default=0, blank=True, null=True, verbose_name='Pupil Size Left')
-    pupil_size_R = models.IntegerField(default=0, blank=True, null=True, verbose_name='Pupil Size Right')
-    CS = models.IntegerField(default=0, blank=True, null=True)
+    NVS_report_completed = models.BooleanField(default=False, null=True, verbose_name='Neuro Vital Signs Report Completed')
 
     # Required Notifications
     family_notified = models.BooleanField(default=False, null=True, verbose_name='Family Notified')
     family_name = models.CharField(max_length=120, default='', blank=True, verbose_name='Family Name')
     family_notification_date = models.DateTimeField(default='1999-12-31 11:59[:59[.999999]][America/Halifax]', blank=True, null=True, verbose_name='Family Notification Date')
 
-    physician_notified = models.BooleanField(default=False, null=True, verbose_name='Physician Notified')
-    physician_name = models.CharField(max_length=120, default='', verbose_name='Physician Name', blank=True)
-    physician_notification_date = models.DateTimeField(default='1999-12-31 11:59[:59[.999999]][America/Halifax]', blank=True, null=True, verbose_name='Physician Notification Date')
+    physician_notified = models.BooleanField(default=False, null=True, verbose_name='Physician or Provider Notified')
+    physician_name = models.CharField(max_length=120, default='', verbose_name='Physician or Provider\'s Name', blank=True)
+    physician_notification_date = models.DateTimeField(default='1999-12-31 11:59[:59[.999999]][America/Halifax]', blank=True, null=True, verbose_name='Physician or Provider Notification Date')
 
     supervisor_notified = models.BooleanField(default=False, null=True, verbose_name='Supervisor Notified')
     supervisor_name = models.CharField(max_length=120, default='', verbose_name='Supervisor Name', blank=True)
